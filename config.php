@@ -1,7 +1,7 @@
 <?php
 // config.php
 function getDBConnection() {
-    require_once 'utils.php';
+    require_once __DIR__ . '/../utils.php';
 
     if (getenv('RAILWAY_ENVIRONMENT')) {
         $host = getenv('MYSQLHOST');
