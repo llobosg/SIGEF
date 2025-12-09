@@ -5,8 +5,8 @@ error_log("[AUTH] POST data: " . print_r($_POST, true));
 session_start();
 error_log("[AUTH] Sesión iniciada. ID de sesión: " . session_id());
 
-//require_once __DIR__ . '/../utils.php';
-require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/utils.php';
+require_once __DIR__ . '/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     log_debug("auth.php: acceso directo (no POST). Redirigiendo a login.php");
