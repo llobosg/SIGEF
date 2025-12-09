@@ -90,7 +90,7 @@
             </div>
         <?php endif; ?>
 
-        <form method="POST" action="/includes/auth.php">
+        <form method="POST" action="/auth.php">
             <input type="text" name="rut" placeholder="RUT" required />
             <input type="password" name="password" placeholder="Contraseña" required />
             <button type="submit">Ingresar</button>
