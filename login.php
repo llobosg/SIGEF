@@ -15,7 +15,7 @@ $error = isset($_GET['error']);
 </head>
 <body>
     <div class="login-container">
-        <img src="assets/logo.jpeg" alt="Logo SIGEF" class="login-logo" onerror="this.style.display='none'">
+        <img src="assets/logo.png" alt="Logo SIGEF" class="login-logo" onerror="this.style.display='none'">
         <h2><i class="fas fa-lock"></i> Acceso a SIGEF</h2>
 
         <?php if ($error): ?>
