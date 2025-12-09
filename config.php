@@ -7,14 +7,14 @@ function getDBConnection() {
         $dbname = 'railway';
         $user = getenv('MYSQLUSER');
         $pass = getenv('MYSQLPASSWORD');
-        log_debug("config.php: usando entorno Railway");
+        error_log("config.php: usando entorno Railway");
     } else {
         $host = 'localhost';
         $port = '3306';
         $dbname = 'railway';
         $user = 'root';
         $pass = '';
-        log_debug("config.php: usando entorno local");
+        error_log("config.php: usando entorno local");
     }
 
     try {
@@ -22,10 +22,10 @@ function getDBConnection() {
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
         ]);
-        log_debug("config.php: conexión PDO creada exitosamente");
+        error_log("config.php: conexión PDO creada exitosamente");
         return $pdo;
     } catch (PDOException $e) {
-        log_debug("config.php: ERROR al conectar: " . $e->getMessage());
+        error_log("config.php: ERROR al conectar: " . $e->getMessage());
         throw $e;
     }
 }
