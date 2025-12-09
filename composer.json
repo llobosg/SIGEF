@@ -1,0 +1,11 @@
+{
+    "name": "SIGEF",
+    "description": "Sistema Integrado Gestión de Flota",
+    "type": "project",
+    "require": {
+        "php": "^8.2",
+        "phpmailer/phpmailer": "^7.0",
+        "tecnickcom/tcpdf": "^6.10"
+    },
+    "license": "MIT"
+}
