@@ -25,7 +25,7 @@
   --port=27546 \
   --user=root \
   --password=BsyHHoiCkOcAHRulqExPQNqlzhIgHWGx \
-  railway -e "CREATE TABLE IF NOT EXISTS PERSONAL (
+  railway -e "CREATE TABLE PERSONAL (
     id_personal INT AUTO_INCREMENT PRIMARY KEY,
     rut VARCHAR(15) NOT NULL UNIQUE,
     nombre VARCHAR(100) NOT NULL,
@@ -34,8 +34,13 @@
     comuna VARCHAR(50),
     celular VARCHAR(50),
     email VARCHAR(50),
+    rol VARCHAR(50),
+    tipo_personal VARCHAR(50),
     tipo_licencia ENUM('A1', 'A2', 'B') NOT NULL,
-    fecha_venc_lic lic DATE
+    fecha_venc_lic DATE,
+    estado ENUM (Vigente, Baja),
+    fecha_estado DATE,
+    password VARCHAR(50)
 );"
 
 -- Tabla MONTO (catálogo de tipos de monto)
@@ -49,21 +54,9 @@
     id_vehiculo INT,
     nombre_vehiculo VARCHAR(50) NOT NULL,
     tipo_monto VARCHAR(50) NOT NULL UNIQUE,
+    tipo_personal VARCHAR(50),
     monto INT
 );"
-
-/Applications/XAMPP/xamppfiles/bin/mysql \
-  --host=crossover.proxy.rlwy.net \
-  --port=27546 \
-  --user=root \
-  --password=BsyHHoiCkOcAHRulqExPQNqlzhIgHWGx \
-  railway -e "INSERT INTO MONTO (tipo_monto) VALUES ('Guía'), ('Distancia'), ('día')
-ON DUPLICATE KEY UPDATE tipo_monto = tipo_monto
-);"
-
--- Insertar valores iniciales en MONTO
-INSERT INTO MONTO (tipo_monto) VALUES ('Guía'), ('Distancia'), ('día')
-ON DUPLICATE KEY UPDATE tipo_monto = tipo_monto;
 
 -- Tabla FACTURACION
 /Applications/XAMPP/xamppfiles/bin/mysql \
