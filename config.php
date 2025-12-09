@@ -1,23 +1,31 @@
 <?php
-// config.php - Configuración de conexión a la base de datos para Railway
+// config.php - Conexión a base de datos Railway usando endpoint privado
 
-// Obtener configuración desde variables de entorno (Railway)
-$host = getenv('DB_HOST') ?: 'localhost';
-$dbname = getenv('DB_NAME') ?: 'SIGEF';
-$username = getenv('DB_USERNAME') ?: 'root';
-$password = getenv('DB_PASSWORD') ?: '';
-
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    die("Error de conexión: " . $e->getMessage());
+// Detectar si estamos en Railway (existe RAILWAY_ENVIRONMENT)
+if (getenv('RAILWAY_ENVIRONMENT')) {
+    // Entorno Railway: usar variables privadas
+    $host     = getenv('MYSQLHOST');
+    $port     = getenv('MYSQLPORT');
+    $dbname   = 'railway'; // ¡Forzamos el uso de la base 'railway'!
+    $username = getenv('MYSQLUSER');
+    $password = getenv('MYSQLPASSWORD');
+} else {
+    // Entorno local (XAMPP, etc.): valores por defecto o personalizados
+    $host     = 'localhost';
+    $port     = '3306';
+    $dbname   = 'railway'; // o 'SIGEF' si usas otro nombre localmente
+    $username = 'root';
+    $password = '';
 }
 
-// Función opcional para obtener la conexión
-function getPDO() {
-    global $pdo;
-    return $pdo;
+try {
+    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4", $username, $password, [
+        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES   => false,
+    ]);
+} catch (PDOException $e) {
+    error_log("Error de conexión a la base de datos: " . $e->getMessage());
+    die("Error: No se pudo conectar a la base de datos.");
 }
 ?>
