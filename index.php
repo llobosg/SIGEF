@@ -1,19 +1,21 @@
 <?php
-// index.php - Punto de entrada con redirección inteligente
 session_start();
+require_once 'utils.php';
 
-// Si el usuario ya está logueado
+log_debug("index.php: inicio. Sesión actual: " . json_encode($_SESSION));
+
 if (isset($_SESSION['user_id'])) {
     $rol = $_SESSION['rol'] ?? 'basico';
+    log_debug("index.php: usuario autenticado. Rol: $rol");
     if ($rol === 'admin') {
         header("Location: pages/vehiculos_view.php");
     } else {
         header("Location: pages/dashboard_basico.php");
     }
     exit;
+} else {
+    log_debug("index.php: usuario NO autenticado. Redirigiendo a login.php");
+    header("Location: login.php");
+    exit;
 }
-
-// Si no está logueado, va al login
-header("Location: login.php");
-exit;
 ?>
