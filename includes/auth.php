@@ -1,9 +1,12 @@
 <?php
+error_log("[AUTH] Entrando a auth.php - REQUEST_METHOD: " . ($_SERVER['REQUEST_METHOD'] ?? 'N/A'));
+error_log("[AUTH] POST data: " . print_r($_POST, true));
+
 session_start();
+error_log("[AUTH] Sesión iniciada. ID de sesión: " . session_id());
+
 require_once 'utils.php';
 require_once 'config.php';
-
-log_debug("auth.php: recibida solicitud. Método: " . $_SERVER['REQUEST_METHOD']);
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     log_debug("auth.php: acceso directo (no POST). Redirigiendo a login.php");
