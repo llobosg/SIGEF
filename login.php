@@ -80,7 +80,7 @@
 <body>
     <div class="login-container">
         <!-- Logo -->
-        <img src="assets/logo.jpeg" alt="Logo SIGEF" class="login-logo" onerror="this.style.display='none'">
+        <img src="assets/logo.png" alt="Logo SIGEF" class="login-logo" onerror="this.style.display='none'">
 
         <h2><i class="fas fa-lock"></i> Acceso a SIGEF</h2>
 
