@@ -34,6 +34,21 @@ if (isset($_GET['edit'])) {
             <form method="POST" action="monto_logic.php">
                 <input type="hidden" name="id_monto" value="<?= $monto['id_monto'] ?? '' ?>">
 
+                <!-- Campo de búsqueda de vehículo -->
+                <div class="form-row" style="margin-top: 1.2rem;">
+                    <label>Vehículo</label>
+                    <div style="position: relative; width: 100%;">
+                        <input type="text" id="busquedaVehiculo" 
+                               placeholder="Buscar por patente, marca o modelo..." 
+                               autocomplete="off"
+                               value="<?= htmlspecialchars($monto['nombre_vehiculo'] ?? '') ?>"
+                               style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px;">
+                        <input type="hidden" name="id_vehiculo" id="id_vehiculo" value="<?= $monto['id_vehiculo'] ?? '' ?>">
+                        <input type="hidden" name="nombre_vehiculo" id="nombre_vehiculo_display" value="<?= htmlspecialchars($monto['nombre_vehiculo'] ?? '') ?>">
+                        <div id="sugerencias" class="sugerencias"></div>
+                    </div>
+                </div>
+
                 <div class="form-grid-4">
                     <label>Tipo Monto</label>
                     <label>Tipo Personal</label>
@@ -53,21 +68,6 @@ if (isset($_GET['edit'])) {
                     </select>
                     <input type="number" name="monto" value="<?= $monto['monto'] ?? '' ?>" required min="0">
                     <div></div>
-                </div>
-
-                <!-- Campo de búsqueda de vehículo -->
-                <div class="form-row" style="margin-top: 1.2rem;">
-                    <label>Vehículo</label>
-                    <div style="position: relative; width: 100%;">
-                        <input type="text" id="busquedaVehiculo" 
-                               placeholder="Buscar por patente, marca o modelo..." 
-                               autocomplete="off"
-                               value="<?= htmlspecialchars($monto['nombre_vehiculo'] ?? '') ?>"
-                               style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px;">
-                        <input type="hidden" name="id_vehiculo" id="id_vehiculo" value="<?= $monto['id_vehiculo'] ?? '' ?>">
-                        <input type="hidden" name="nombre_vehiculo" id="nombre_vehiculo_display" value="<?= htmlspecialchars($monto['nombre_vehiculo'] ?? '') ?>">
-                        <div id="sugerencias" class="sugerencias"></div>
-                    </div>
                 </div>
 
                 <div class="form-actions">
