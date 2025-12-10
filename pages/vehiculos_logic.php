@@ -1,5 +1,5 @@
 <?php
-    require '../auth.php';
+    require '../session_check.php';
     if ($_SESSION['rol'] !== 'admin') {
         http_response_code(403);
         exit('Acceso denegado');

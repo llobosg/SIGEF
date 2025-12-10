@@ -3,12 +3,12 @@ require '../session_check.php';
 if ($_SESSION['rol'] !== 'admin') {
     die('Acceso denegado');
 }
+require '../config.php';
 
 // Cargar datos si es edición
 $vehiculo = null;
 $alert_msg = '';
 if (isset($_GET['edit'])) {
-    require '../config.php';
     $pdo = getDBConnection();
     $stmt = $pdo->prepare("SELECT * FROM VEHICULO WHERE id_vehiculo = ?");
     $stmt->execute([(int)$_GET['edit']]);
