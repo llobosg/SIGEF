@@ -40,10 +40,10 @@ try {
 
         if ($user['rol'] === 'admin') {
             error_log("auth.php: redirigiendo a admin dashboard");
-            header("Location: pages/vehiculos_view.php");
+            header("Location: /pages/vehiculos_view.php");
         } else {
             error_log("auth.php: redirigiendo a dashboard básico");
-            header("Location: pages/dashboard_basico.php");
+            header("Location: /pages/dashboard_basico.php");
         }
         exit;
     } else {

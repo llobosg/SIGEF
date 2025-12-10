@@ -14,15 +14,7 @@ if ($_SESSION['rol'] !== 'admin') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-    <div class="main-header">
-        <div class="logo">SIGEF</div>
-        <nav>
-            <a href="vehiculos_view.php">Vehículos</a>
-            <a href="personas_view.php">Personal</a>
-            <a href="monto_view.php">Montos</a>
-            <a href="../logout.php">Salir</a>
-        </nav>
-    </div>
+    <?php require '../includes/header.php'; ?>
 
     <div class="container">
         <div class="card">

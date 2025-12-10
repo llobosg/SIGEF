@@ -6,15 +6,7 @@
     <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
-    <div class="main-header">
-        <div class="logo">SIGEF</div>
-        <nav>
-            <a href="vehiculos_view.php">Vehículos</a>
-            <a href="personas_view.php">Personal</a>
-            <a href="monto_view.php">Montos</a>
-            <a href="../logout.php">Salir</a>
-        </nav>
-    </div>
+    <?php require '../includes/header.php'; ?>
 
     <div class="container">
         <div class="card">

@@ -1,17 +1,19 @@
 <?php
-// Asegúrate de que $_SESSION esté activa
+// includes/header.php - Menú superior reutilizable
 $rol = $_SESSION['rol'] ?? 'basico';
 ?>
-<header class="main-header">
+<div class="main-header">
     <div class="logo">SIGEF</div>
     <nav>
         <?php if ($rol === 'admin'): ?>
-            <a href="vehiculos.php">Ficha Camión</a>
-            <a href="personal.php">Personal</a>
-            <a href="dashboard_admin.php">Dashboard</a>
+            <a href="/pages/vehiculos_view.php">Vehículos</a>
+            <a href="/pages/personas_view.php">Personal</a>
+            <a href="/pages/monto_view.php">Montos</a>
         <?php else: ?>
-            <a href="dashboard_basico.php">Inicio</a>
+            <a href="/pages/dashboard_basico.php">Inicio</a>
         <?php endif; ?>
-        <a href="logout.php" style="color: #e74c3c;">Salir</a>
+        <a href="/logout.php" style="color: #e74c3c;">
+            <i class="fas fa-sign-out-alt"></i> Salir
+        </a>
     </nav>
-</header>
+</div>
