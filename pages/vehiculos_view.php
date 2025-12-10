@@ -1,7 +1,7 @@
 <?php
-require '../auth.php';
+require '../session_check.php';
 if ($_SESSION['rol'] !== 'admin') {
-    die('Acceso denegado');
+    die('Acceso denegado: rol insuficiente.');
 }
 ?>
 <!DOCTYPE html>
