@@ -4,26 +4,13 @@ if ($_SESSION['rol'] !== 'admin') {
     die('Acceso denegado');
 }
 
-// Cargar datos si es edición
 $persona = null;
-$alert_msg = '';
 if (isset($_GET['edit'])) {
     require '../config.php';
     $pdo = getDBConnection();
     $stmt = $pdo->prepare("SELECT * FROM PERSONAL WHERE id_personal = ?");
     $stmt->execute([(int)$_GET['edit']]);
     $persona = $stmt->fetch();
-
-    if ($persona && !empty($persona['fecha_venc_lic'])) {
-        $hoy = new DateTime();
-        $venc = new DateTime($persona['fecha_venc_lic']);
-        $diff = $hoy->diff($venc);
-        if ($venc < $hoy) {
-            $alert_msg = "⚠️ Licencia vencida hace {$diff->days} días.";
-        } elseif ($diff->days <= 30) {
-            $alert_msg = "⚠️ Licencia vence en {$diff->days} días.";
-        }
-    }
 }
 ?>
 <!DOCTYPE html>
@@ -33,8 +20,7 @@ if (isset($_GET['edit'])) {
     <title>Personal - SIGEF</title>
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- Toastify para notificaciones -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" href=" https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
 <body>
     <?php require '../includes/header.php'; ?>
@@ -49,55 +35,65 @@ if (isset($_GET['edit'])) {
             <form method="POST" action="personas_logic.php" id="formPersonal">
                 <input type="hidden" name="id_personal" value="<?= $persona['id_personal'] ?? '' ?>">
 
-                <div class="form-grid-4">
-                    <!-- Fila 1: Labels -->
-                    <label>RUT</label>
-                    <label>Nombre</label>
-                    <label>Fecha Nacimiento</label>
-                    <label>Estado</label>
+                <div class="form-4col">
+                    <!-- Columna 1: Labels izquierda -->
+                    <div class="form-col-labels">
+                        <label>RUT</label>
+                        <label>Nombre</label>
+                        <label>Fecha Nacimiento</label>
+                        <label>Estado</label>
+                        <label>Dirección</label>
+                        <label>Comuna</label>
+                        <label>Celular</label>
+                        <label>Email</label>
+                    </div>
 
-                    <!-- Fila 2: Campos -->
-                    <input type="text" name="rut" id="rut" value="<?= htmlspecialchars($persona['rut'] ?? '') ?>" 
-                           onchange="validarRUT(this)" placeholder="12345678-9" required>
-                    <input type="text" name="nombre" value="<?= htmlspecialchars($persona['nombre'] ?? '') ?>" required>
-                    <input type="date" name="fecha_nac" value="<?= $persona['fecha_nac'] ?? '' ?>">
-                    <select name="estado" required>
-                        <option value="">Seleccionar</option>
-                        <option value="Vigente" <?= ($persona['estado'] ?? '') === 'Vigente' ? 'selected' : '' ?>>Vigente</option>
-                        <option value="Baja" <?= ($persona['estado'] ?? '') === 'Baja' ? 'selected' : '' ?>>Baja</option>
-                    </select>
+                    <!-- Columna 2: Campos izquierda -->
+                    <div class="form-col-fields">
+                        <input type="text" name="rut" id="rut" value="<?= htmlspecialchars($persona['rut'] ?? '') ?>" 
+                               onchange="validarRUT(this)" placeholder="12345678-9" required>
+                        <input type="text" name="nombre" value="<?= htmlspecialchars($persona['nombre'] ?? '') ?>" required>
+                        <input type="date" name="fecha_nac" value="<?= $persona['fecha_nac'] ?? '' ?>">
+                        <select name="estado" required>
+                            <option value="">Seleccionar</option>
+                            <option value="Vigente" <?= ($persona['estado'] ?? '') === 'Vigente' ? 'selected' : '' ?>>Vigente</option>
+                            <option value="Baja" <?= ($persona['estado'] ?? '') === 'Baja' ? 'selected' : '' ?>>Baja</option>
+                        </select>
+                        <input type="text" name="direccion" value="<?= htmlspecialchars($persona['direccion'] ?? '') ?>">
+                        <input type="text" name="comuna" value="<?= htmlspecialchars($persona['comuna'] ?? '') ?>">
+                        <input type="text" name="celular" value="<?= htmlspecialchars($persona['celular'] ?? '') ?>">
+                        <input type="email" name="email" value="<?= htmlspecialchars($persona['email'] ?? '') ?>">
+                    </div>
 
-                    <!-- Fila 3: Labels -->
-                    <label>Dirección</label>
-                    <label>Comuna</label>
-                    <label>Celular</label>
-                    <label>Email</label>
+                    <!-- Columna 3: Labels derecha -->
+                    <div class="form-col-labels">
+                        <label>Tipo Personal</label>
+                        <label id="lblTipoLic">Tipo Licencia</label>
+                        <label id="lblFechaVenc">Fecha Vencimiento</label>
+                        <label>Contraseña</label>
+                        <!-- Espaciadores para alinear -->
+                        <div></div><div></div><div></div><div></div>
+                    </div>
 
-                    <!-- Fila 4: Campos -->
-                    <input type="text" name="direccion" value="<?= htmlspecialchars($persona['direccion'] ?? '') ?>">
-                    <input type="text" name="comuna" value="<?= htmlspecialchars($persona['comuna'] ?? '') ?>">
-                    <input type="text" name="celular" value="<?= htmlspecialchars($persona['celular'] ?? '') ?>">
-                    <input type="email" name="email" value="<?= htmlspecialchars($persona['email'] ?? '') ?>">
-
-                    <!-- Fila 5: Labels -->
-                    <label>Tipo Personal</label>
-                    <label>Rol</label>
-                    <label>Contraseña</label>
-                    <label></label>
-
-                    <!-- Fila 6: Campos -->
-                    <select name="tipo_personal" id="tipo_personal" required>
-                        <option value="">Seleccionar</option>
-                        <option value="Chofer" <?= ($persona['tipo_personal'] ?? '') === 'Chofer' ? 'selected' : '' ?>>Chofer</option>
-                        <option value="Peoneta" <?= ($persona['tipo_personal'] ?? '') === 'Peoneta' ? 'selected' : '' ?>>Peoneta</option>
-                    </select>
-                    <select name="rol" disabled>
-                        <option value="basico" <?= ($persona['rol'] ?? 'basico') === 'basico' ? 'selected' : '' ?>>Básico</option>
-                        <!-- Solo admin puede crear admin, pero lo dejamos fijo por ahora -->
-                    </select>
-                    <input type="password" name="password" placeholder="<?= $persona ? 'Dejar vacío para no cambiar' : 'Contraseña' ?>" 
-                           <?= !$persona ? 'required' : '' ?>>
-                    <div></div>
+                    <!-- Columna 4: Campos derecha -->
+                    <div class="form-col-fields">
+                        <select name="tipo_personal" id="tipo_personal" required>
+                            <option value="">Seleccionar</option>
+                            <option value="Chofer" <?= ($persona['tipo_personal'] ?? '') === 'Chofer' ? 'selected' : '' ?>>Chofer</option>
+                            <option value="Peoneta" <?= ($persona['tipo_personal'] ?? '') === 'Peoneta' ? 'selected' : '' ?>>Peoneta</option>
+                        </select>
+                        <select name="tipo_licencia" id="tipo_licencia">
+                            <option value="">Seleccionar</option>
+                            <option value="A1" <?= ($persona['tipo_licencia'] ?? '') === 'A1' ? 'selected' : '' ?>>A1</option>
+                            <option value="A2" <?= ($persona['tipo_licencia'] ?? '') === 'A2' ? 'selected' : '' ?>>A2</option>
+                            <option value="B" <?= ($persona['tipo_licencia'] ?? '') === 'B' ? 'selected' : '' ?>>B</option>
+                        </select>
+                        <input type="date" name="fecha_venc_lic" id="fecha_venc_lic" value="<?= $persona['fecha_venc_lic'] ?? '' ?>">
+                        <input type="password" name="password" placeholder="<?= $persona ? 'Dejar vacío para no cambiar' : 'Contraseña' ?>" 
+                               <?= !$persona ? 'required' : '' ?>>
+                        <!-- Espaciadores -->
+                        <div></div><div></div><div></div><div></div>
+                    </div>
                 </div>
 
                 <!-- Botón Guardar -->
@@ -107,10 +103,6 @@ if (isset($_GET['edit'])) {
                     </button>
                 </div>
             </form>
-
-            <?php if (isset($alert_msg)): ?>
-                <div class="alert alert-warning"><?= htmlspecialchars($alert_msg) ?></div>
-            <?php endif; ?>
         </div>
 
         <!-- Tabla de personal -->
@@ -127,10 +119,10 @@ if (isset($_GET['edit'])) {
         </div>
     </div>
 
-    <!-- Toastify JS -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
-        // Validación RUT chileno
+        // Validación RUT
         function validarRUT(input) {
             let rut = input.value.replace(/[^0-9Kk-]/g, '').toUpperCase();
             if (!rut) return;
@@ -144,13 +136,7 @@ if (isset($_GET['edit'])) {
             let dv = parts[1];
             input.value = num + '-' + dv;
             if (dv !== getDV(num)) {
-                Toastify({
-                    text: "RUT inválido",
-                    duration: 3000,
-                    gravity: "top",
-                    position: "right",
-                    backgroundColor: "#e74c3c",
-                }).showToast();
+                Toastify({text:"RUT inválido",duration:3000,gravity:"top",position:"right",backgroundColor:"#e74c3c"}).showToast();
             }
         }
         function getDV(T) {
@@ -159,12 +145,26 @@ if (isset($_GET['edit'])) {
             return S ? S - 1 + '' : 'K';
         }
 
-        // Mostrar/ocultar campos de licencia (si se agrega en el futuro)
-        document.getElementById('tipo_personal')?.addEventListener('change', function() {
-            // Opcional: habilitar campos adicionales si es Chofer
-        });
+        // Mostrar/ocultar campos de licencia
+        function toggleLicencia() {
+            const isChofer = document.getElementById('tipo_personal').value === 'Chofer';
+            document.getElementById('lblTipoLic').style.opacity = isChofer ? 1 : 0.4;
+            document.getElementById('lblFechaVenc').style.opacity = isChofer ? 1 : 0.4;
+            document.getElementById('tipo_licencia').disabled = !isChofer;
+            document.getElementById('fecha_venc_lic').disabled = !isChofer;
+            
+            // Opcional: limpiar si se desactiva
+            if (!isChofer) {
+                document.getElementById('tipo_licencia').value = '';
+                document.getElementById('fecha_venc_lic').value = '';
+            }
+        }
 
-        // Cargar tabla desde API
+        // Inicializar al cargar
+        document.getElementById('tipo_personal').addEventListener('change', toggleLicencia);
+        toggleLicencia(); // Aplicar estado inicial
+
+        // Cargar tabla
         fetch('../api/get_personas.php')
             .then(r => r.json())
             .then(data => {
@@ -181,16 +181,25 @@ if (isset($_GET['edit'])) {
                         </td>
                     </tr>
                 `).join('');
-            })
-            .catch(err => {
-                Toastify({
-                    text: "Error al cargar personal",
-                    duration: 3000,
-                    gravity: "top",
-                    position: "right",
-                    backgroundColor: "#e74c3c",
-                }).showToast();
             });
+
+        // Notificaciones toast desde URL
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const msg = urlParams.get('msg');
+            if (!msg) return;
+            let text = "", bg = "#27ae60";
+            switch(msg) {
+                case 'insert_success': text = "✅ Personal creado exitosamente"; break;
+                case 'update_success': text = "✅ Datos actualizados"; break;
+                case 'delete_success': text = "🗑️ Registro eliminado"; break;
+                case 'rut_duplicado': text = "❌ El RUT ya existe"; bg = "#e74c3c"; break;
+                case 'error': text = "⚠️ Error al guardar"; bg = "#e74c3c"; break;
+                default: return;
+            }
+            Toastify({text,duration:4000,gravity:"top",position:"right",backgroundColor:bg}).showToast();
+            history.replaceState({}, '', location.pathname);
+        })();
     </script>
 
     <style>
@@ -200,33 +209,46 @@ if (isset($_GET['edit'])) {
             margin-bottom: 1.2rem;
         }
 
-        /* Grid de 4 columnas */
-        .form-grid-4 {
+        /* Layout de 4 columnas */
+        .form-4col {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 0.8rem;
-            margin-bottom: 1.2rem;
+            grid-template-columns: auto 1fr auto 1fr;
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
         }
 
-        .form-grid-4 label {
-            text-align: center;
+        .form-col-labels,
+        .form-col-fields {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .form-col-labels label {
             font-weight: normal;
             color: var(--dark);
-            margin-bottom: 0.3rem;
+            text-align: right;
+            padding-right: 0.5rem;
         }
 
-        .form-grid-4 input,
-        .form-grid-4 select {
+        .form-col-fields input,
+        .form-col-fields select {
             width: 100%;
             padding: 0.5rem;
             border: 1px solid var(--border);
             border-radius: 4px;
             font-size: 0.95rem;
-            box-sizing: border-box;
         }
 
-        .form-grid-4 > div:empty {
+        .form-col-fields > div:empty {
             visibility: hidden;
+        }
+
+        /* Deshabilitar visualmente campos no aplicables */
+        #tipo_licencia:disabled,
+        #fecha_venc_lic:disabled {
+            background-color: #f5f5f5;
+            color: var(--gray);
         }
 
         .form-actions {
@@ -252,60 +274,14 @@ if (isset($_GET['edit'])) {
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
-            .form-grid-4 {
-                grid-template-columns: repeat(2, 1fr);
+        @media (max-width: 992px) {
+            .form-4col {
+                grid-template-columns: 1fr;
             }
-            .form-grid-4 label {
-                grid-column: span 2;
+            .form-col-labels label {
                 text-align: left;
             }
         }
     </style>
-    <script>
-        // Mostrar notificación al cargar la página según parámetro 'msg'
-        (function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const msg = urlParams.get('msg');
-            if (!msg) return;
-
-            let text = "", bg = "#27ae60";
-
-            switch(msg) {
-                case 'insert_success':
-                    text = "✅ Personal creado exitosamente";
-                    break;
-                case 'update_success':
-                    text = "✅ Datos actualizados";
-                    break;
-                case 'delete_success':
-                    text = "🗑️ Registro eliminado";
-                    break;
-                case 'rut_duplicado':
-                    text = "❌ El RUT ya existe en el sistema";
-                    bg = "#e74c3c";
-                    break;
-                case 'error':
-                    text = "⚠️ Error al guardar los datos";
-                    bg = "#e74c3c";
-                    break;
-                default:
-                    return;
-            }
-
-            // Mostrar toast
-            Toastify({
-                text: text,
-                duration: 4000,
-                gravity: "top",
-                position: "right",
-                backgroundColor: bg,
-                stopOnFocus: true,
-            }).showToast();
-
-            // Limpiar parámetro 'msg' de la URL sin recargar
-            window.history.replaceState({}, document.title, window.location.pathname);
-        })();
-        </script>
 </body>
 </html>
