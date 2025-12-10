@@ -59,12 +59,12 @@ if ($_POST) {
                     fecha_venc_lic = ?, estado = ?, " . ($fecha_estado ? "fecha_estado = ?, " : "") .
                 "password = ? WHERE id_personal = ?";
         $params = [
-            $rut, $_POST['nombre'], $_POST['fecha_nac'] ?: null, $_POST['direccion'], $_POST['comuna'],
-            $_POST['celular'], $_POST['email'], $_POST['rol'], $tipo_personal, $tipo_licencia,
-            $fecha_venc_lic, $estado
+                $rut, $_POST['nombre'], $_POST['fecha_nac'] ?: null, $_POST['direccion'],
+                $_POST['comuna'], $_POST['celular'], $_POST['email'], 
+                $_POST['rol'] ?? 'basico',
+                $tipo_personal, $tipo_licencia, $fecha_venc_lic, $estado, $pwdHash
         ];
         if ($fecha_estado) $params[] = $fecha_estado;
-        $params[] = $pwdHash;
         $params[] = $id;
 
         $pdo->prepare($sql)->execute($params);

@@ -72,12 +72,17 @@ if (isset($_GET['edit'])) {
                     </select>
                     <label>Contraseña</label>
                     <input type="password" name="password" placeholder="<?= $persona ? 'Dejar vacío para no cambiar' : 'Contraseña' ?>" 
-                           <?= !$persona ? 'required' : '' ?>>
+                        <?= !$persona ? 'required' : '' ?>>
 
                     <!-- Fila 5 -->
                     <label>Dirección</label>
                     <input type="text" name="direccion" value="<?= htmlspecialchars($persona['direccion'] ?? '') ?>">
-                    <div></div><div></div> <!-- Espaciadores vacíos -->
+                    <label>Rol</label>
+                    <select name="rol" required>
+                        <option value="">Seleccionar</option>
+                        <option value="admin" <?= ($persona['rol'] ?? 'basico') === 'admin' ? 'selected' : '' ?>>admin</option>
+                        <option value="basico" <?= ($persona['rol'] ?? 'basico') === 'basico' ? 'selected' : '' ?>>básico</option>
+                    </select>
 
                     <!-- Fila 6 -->
                     <label>Comuna</label>
