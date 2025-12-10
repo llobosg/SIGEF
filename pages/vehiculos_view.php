@@ -9,8 +9,8 @@
     <div class="main-header">
         <div class="logo">SIGEF</div>
         <nav>
-            <a href="vehiculos_view.php">Vehículos</a>
-            <a href="personas_view.php">Personal</a>
+            <a href="pages/vehiculos_view.php">Vehículos</a>
+            <a href="pages/personas_view.php">Personal</a>
             <a href="../logout.php">Salir</a>
         </nav>
     </div>
