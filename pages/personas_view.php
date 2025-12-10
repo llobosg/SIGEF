@@ -20,13 +20,12 @@ if (isset($_GET['edit'])) {
     <title>Personal - SIGEF</title>
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href=" https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
 <body>
     <?php require '../includes/header.php'; ?>
 
     <div class="container">
-        <!-- Título fuera del formulario -->
         <div class="page-title">
             <h2><i class="fas fa-user-friends"></i> Ficha Personal</h2>
         </div>
@@ -35,68 +34,67 @@ if (isset($_GET['edit'])) {
             <form method="POST" action="personas_logic.php" id="formPersonal">
                 <input type="hidden" name="id_personal" value="<?= $persona['id_personal'] ?? '' ?>">
 
-                <div class="form-4col">
-                    <!-- Columna 1: Labels izquierda -->
-                    <div class="form-col-labels">
-                        <label>RUT</label>
-                        <label>Nombre</label>
-                        <label>Fecha Nacimiento</label>
-                        <label>Estado</label>
-                        <label>Dirección</label>
-                        <label>Comuna</label>
-                        <label>Celular</label>
-                        <label>Email</label>
-                    </div>
+                <div class="form-4col-grid">
+                    <!-- Fila 1 -->
+                    <label>RUT</label>
+                    <input type="text" name="rut" id="rut" value="<?= htmlspecialchars($persona['rut'] ?? '') ?>" 
+                           onchange="validarRUT(this)" placeholder="12345678-9" required>
+                    <label>Tipo Personal</label>
+                    <select name="tipo_personal" id="tipo_personal" required>
+                        <option value="">Seleccionar</option>
+                        <option value="Chofer" <?= ($persona['tipo_personal'] ?? '') === 'Chofer' ? 'selected' : '' ?>>Chofer</option>
+                        <option value="Peoneta" <?= ($persona['tipo_personal'] ?? '') === 'Peoneta' ? 'selected' : '' ?>>Peoneta</option>
+                    </select>
 
-                    <!-- Columna 2: Campos izquierda -->
-                    <div class="form-col-fields">
-                        <input type="text" name="rut" id="rut" value="<?= htmlspecialchars($persona['rut'] ?? '') ?>" 
-                               onchange="validarRUT(this)" placeholder="12345678-9" required>
-                        <input type="text" name="nombre" value="<?= htmlspecialchars($persona['nombre'] ?? '') ?>" required>
-                        <input type="date" name="fecha_nac" value="<?= $persona['fecha_nac'] ?? '' ?>">
-                        <select name="estado" required>
-                            <option value="">Seleccionar</option>
-                            <option value="Vigente" <?= ($persona['estado'] ?? '') === 'Vigente' ? 'selected' : '' ?>>Vigente</option>
-                            <option value="Baja" <?= ($persona['estado'] ?? '') === 'Baja' ? 'selected' : '' ?>>Baja</option>
-                        </select>
-                        <input type="text" name="direccion" value="<?= htmlspecialchars($persona['direccion'] ?? '') ?>">
-                        <input type="text" name="comuna" value="<?= htmlspecialchars($persona['comuna'] ?? '') ?>">
-                        <input type="text" name="celular" value="<?= htmlspecialchars($persona['celular'] ?? '') ?>">
-                        <input type="email" name="email" value="<?= htmlspecialchars($persona['email'] ?? '') ?>">
-                    </div>
+                    <!-- Fila 2 -->
+                    <label>Nombre</label>
+                    <input type="text" name="nombre" value="<?= htmlspecialchars($persona['nombre'] ?? '') ?>" required>
+                    <label id="lblTipoLic">Tipo Licencia</label>
+                    <select name="tipo_licencia" id="tipo_licencia">
+                        <option value="">Seleccionar</option>
+                        <option value="A1" <?= ($persona['tipo_licencia'] ?? '') === 'A1' ? 'selected' : '' ?>>A1</option>
+                        <option value="A2" <?= ($persona['tipo_licencia'] ?? '') === 'A2' ? 'selected' : '' ?>>A2</option>
+                        <option value="B" <?= ($persona['tipo_licencia'] ?? '') === 'B' ? 'selected' : '' ?>>B</option>
+                    </select>
 
-                    <!-- Columna 3: Labels derecha -->
-                    <div class="form-col-labels">
-                        <label>Tipo Personal</label>
-                        <label id="lblTipoLic">Tipo Licencia</label>
-                        <label id="lblFechaVenc">Fecha Vencimiento</label>
-                        <label>Contraseña</label>
-                        <!-- Espaciadores para alinear -->
-                        <div></div><div></div><div></div><div></div>
-                    </div>
+                    <!-- Fila 3 -->
+                    <label>Fecha Nacimiento</label>
+                    <input type="date" name="fecha_nac" value="<?= $persona['fecha_nac'] ?? '' ?>">
+                    <label id="lblFechaVenc">Fecha Vencimiento</label>
+                    <input type="date" name="fecha_venc_lic" id="fecha_venc_lic" value="<?= $persona['fecha_venc_lic'] ?? '' ?>">
 
-                    <!-- Columna 4: Campos derecha -->
-                    <div class="form-col-fields">
-                        <select name="tipo_personal" id="tipo_personal" required>
-                            <option value="">Seleccionar</option>
-                            <option value="Chofer" <?= ($persona['tipo_personal'] ?? '') === 'Chofer' ? 'selected' : '' ?>>Chofer</option>
-                            <option value="Peoneta" <?= ($persona['tipo_personal'] ?? '') === 'Peoneta' ? 'selected' : '' ?>>Peoneta</option>
-                        </select>
-                        <select name="tipo_licencia" id="tipo_licencia">
-                            <option value="">Seleccionar</option>
-                            <option value="A1" <?= ($persona['tipo_licencia'] ?? '') === 'A1' ? 'selected' : '' ?>>A1</option>
-                            <option value="A2" <?= ($persona['tipo_licencia'] ?? '') === 'A2' ? 'selected' : '' ?>>A2</option>
-                            <option value="B" <?= ($persona['tipo_licencia'] ?? '') === 'B' ? 'selected' : '' ?>>B</option>
-                        </select>
-                        <input type="date" name="fecha_venc_lic" id="fecha_venc_lic" value="<?= $persona['fecha_venc_lic'] ?? '' ?>">
-                        <input type="password" name="password" placeholder="<?= $persona ? 'Dejar vacío para no cambiar' : 'Contraseña' ?>" 
-                               <?= !$persona ? 'required' : '' ?>>
-                        <!-- Espaciadores -->
-                        <div></div><div></div><div></div><div></div>
-                    </div>
+                    <!-- Fila 4 -->
+                    <label>Estado</label>
+                    <select name="estado" required>
+                        <option value="">Seleccionar</option>
+                        <option value="Vigente" <?= ($persona['estado'] ?? '') === 'Vigente' ? 'selected' : '' ?>>Vigente</option>
+                        <option value="Baja" <?= ($persona['estado'] ?? '') === 'Baja' ? 'selected' : '' ?>>Baja</option>
+                    </select>
+                    <label>Contraseña</label>
+                    <input type="password" name="password" placeholder="<?= $persona ? 'Dejar vacío para no cambiar' : 'Contraseña' ?>" 
+                           <?= !$persona ? 'required' : '' ?>>
+
+                    <!-- Fila 5 -->
+                    <label>Dirección</label>
+                    <input type="text" name="direccion" value="<?= htmlspecialchars($persona['direccion'] ?? '') ?>">
+                    <div></div><div></div> <!-- Espaciadores vacíos -->
+
+                    <!-- Fila 6 -->
+                    <label>Comuna</label>
+                    <input type="text" name="comuna" value="<?= htmlspecialchars($persona['comuna'] ?? '') ?>">
+                    <div></div><div></div>
+
+                    <!-- Fila 7 -->
+                    <label>Celular</label>
+                    <input type="text" name="celular" value="<?= htmlspecialchars($persona['celular'] ?? '') ?>">
+                    <div></div><div></div>
+
+                    <!-- Fila 8 -->
+                    <label>Email</label>
+                    <input type="email" name="email" value="<?= htmlspecialchars($persona['email'] ?? '') ?>">
+                    <div></div><div></div>
                 </div>
 
-                <!-- Botón Guardar -->
                 <div class="form-actions">
                     <button type="submit" class="btn-save">
                         <i class="fas fa-save"></i> Guardar
@@ -128,11 +126,10 @@ if (isset($_GET['edit'])) {
             if (!rut) return;
             const parts = rut.split('-');
             if (parts.length !== 2) {
-                const num = rut.replace(/-/g, '').slice(0, 8);
-                input.value = num;
+                input.value = rut.replace(/-/g, '').slice(0,8);
                 return;
             }
-            let num = parts[0].slice(0, 8);
+            let num = parts[0].slice(0,8);
             let dv = parts[1];
             input.value = num + '-' + dv;
             if (dv !== getDV(num)) {
@@ -148,21 +145,28 @@ if (isset($_GET['edit'])) {
         // Mostrar/ocultar campos de licencia
         function toggleLicencia() {
             const isChofer = document.getElementById('tipo_personal').value === 'Chofer';
-            document.getElementById('lblTipoLic').style.opacity = isChofer ? 1 : 0.4;
-            document.getElementById('lblFechaVenc').style.opacity = isChofer ? 1 : 0.4;
-            document.getElementById('tipo_licencia').disabled = !isChofer;
-            document.getElementById('fecha_venc_lic').disabled = !isChofer;
-            
-            // Opcional: limpiar si se desactiva
-            if (!isChofer) {
-                document.getElementById('tipo_licencia').value = '';
-                document.getElementById('fecha_venc_lic').value = '';
+            const lblTipo = document.getElementById('lblTipoLic');
+            const lblFecha = document.getElementById('lblFechaVenc');
+            const selTipo = document.getElementById('tipo_licencia');
+            const inpFecha = document.getElementById('fecha_venc_lic');
+
+            if (isChofer) {
+                lblTipo.style.opacity = 1;
+                lblFecha.style.opacity = 1;
+                selTipo.disabled = false;
+                inpFecha.disabled = false;
+            } else {
+                lblTipo.style.opacity = 0.4;
+                lblFecha.style.opacity = 0.4;
+                selTipo.disabled = true;
+                inpFecha.disabled = true;
+                selTipo.value = '';
+                inpFecha.value = '';
             }
         }
 
-        // Inicializar al cargar
         document.getElementById('tipo_personal').addEventListener('change', toggleLicencia);
-        toggleLicencia(); // Aplicar estado inicial
+        toggleLicencia();
 
         // Cargar tabla
         fetch('../api/get_personas.php')
@@ -183,17 +187,17 @@ if (isset($_GET['edit'])) {
                 `).join('');
             });
 
-        // Notificaciones toast desde URL
+        // Toast desde URL
         (function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const msg = urlParams.get('msg');
+            const params = new URLSearchParams(window.location.search);
+            const msg = params.get('msg');
             if (!msg) return;
             let text = "", bg = "#27ae60";
             switch(msg) {
-                case 'insert_success': text = "✅ Personal creado exitosamente"; break;
+                case 'insert_success': text = "✅ Personal creado"; break;
                 case 'update_success': text = "✅ Datos actualizados"; break;
                 case 'delete_success': text = "🗑️ Registro eliminado"; break;
-                case 'rut_duplicado': text = "❌ El RUT ya existe"; bg = "#e74c3c"; break;
+                case 'rut_duplicado': text = "❌ RUT ya existe"; bg = "#e74c3c"; break;
                 case 'error': text = "⚠️ Error al guardar"; bg = "#e74c3c"; break;
                 default: return;
             }
@@ -209,30 +213,24 @@ if (isset($_GET['edit'])) {
             margin-bottom: 1.2rem;
         }
 
-        /* Layout de 4 columnas */
-        .form-4col {
+        /* Grid de 4 columnas: label - campo - label - campo */
+        .form-4col-grid {
             display: grid;
-            grid-template-columns: auto 1fr auto 1fr;
-            gap: 1.2rem;
+            grid-template-columns: minmax(120px, auto) 1fr minmax(120px, auto) 1fr;
+            gap: 0.8rem 1.2rem;
             margin-bottom: 1.5rem;
         }
 
-        .form-col-labels,
-        .form-col-fields {
-            display: flex;
-            flex-direction: column;
-            gap: 0.6rem;
-        }
-
-        .form-col-labels label {
+        .form-4col-grid label {
             font-weight: normal;
             color: var(--dark);
-            text-align: right;
-            padding-right: 0.5rem;
+            display: flex;
+            align-items: center;
+            height: 100%;
         }
 
-        .form-col-fields input,
-        .form-col-fields select {
+        .form-4col-grid input,
+        .form-4col-grid select {
             width: 100%;
             padding: 0.5rem;
             border: 1px solid var(--border);
@@ -240,11 +238,12 @@ if (isset($_GET['edit'])) {
             font-size: 0.95rem;
         }
 
-        .form-col-fields > div:empty {
+        /* Espaciadores vacíos */
+        .form-4col-grid > div:empty {
             visibility: hidden;
         }
 
-        /* Deshabilitar visualmente campos no aplicables */
+        /* Deshabilitar visualmente */
         #tipo_licencia:disabled,
         #fecha_venc_lic:disabled {
             background-color: #f5f5f5;
@@ -273,12 +272,11 @@ if (isset($_GET['edit'])) {
             background: var(--secondary-hover);
         }
 
-        /* Responsive */
         @media (max-width: 992px) {
-            .form-4col {
+            .form-4col-grid {
                 grid-template-columns: 1fr;
             }
-            .form-col-labels label {
+            .form-4col-grid label {
                 text-align: left;
             }
         }
