@@ -1,4 +1,4 @@
-<?php require '../auth.php'; if ($_SESSION['rol'] !== 'admin') die('Acceso denegado'); ?>
+<?php require '../session_check.php'; if ($_SESSION['rol'] !== 'admin') die('Acceso denegado'); ?>
 <!DOCTYPE html>
 <html>
 <head>
