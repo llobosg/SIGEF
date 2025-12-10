@@ -49,11 +49,11 @@ if (isset($_GET['edit'])) {
 
                 <!-- Fila 2: Labels -->
                 <div class="form-row">
-                    <label>Marca</label>
-                    <label>Modelo</label>
-                    <label>Año</label>
-                    <label>Patente</label>
-                    <label>Nombre Vehículo</label>
+                    <label>          Marca</label>
+                    <label>          Modelo</label>
+                    <label>          Año</label>
+                    <label>          Patente</label>
+                    <label>          Nombre Vehículo</label>
                 </div>
 
                 <!-- Fila 3: Campos -->
@@ -68,7 +68,7 @@ if (isset($_GET['edit'])) {
                 <!-- Fila 4: Labels (con permiso_circ al inicio) -->
                 <div class="form-row">
                     <label>Permiso Circulación</label>
-                    <label>Revisión Técnica</label>
+                    <label>         Revisión Técnica</label>
                     <label>N° SOAP</label>
                     <label>Seguro</label>
                     <label>Aseguradora</label>
