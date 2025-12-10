@@ -1,7 +1,9 @@
 <?php
 require '../auth.php';
-if ($_SESSION['rol'] !== 'admin') exit;
-
+if ($_SESSION['rol'] !== 'admin') {
+    http_response_code(403);
+    exit('Acceso denegado');
+}
 require '../config.php';
 $pdo = getDBConnection();
 
