@@ -3,6 +3,28 @@ require '../session_check.php';
 if ($_SESSION['rol'] !== 'admin') {
     die('Acceso denegado');
 }
+
+// Cargar datos si es edición
+$vehiculo = null;
+$alert_msg = '';
+if (isset($_GET['edit'])) {
+    require '../config.php';
+    $pdo = getDBConnection();
+    $stmt = $pdo->prepare("SELECT * FROM VEHICULO WHERE id_vehiculo = ?");
+    $stmt->execute([(int)$_GET['edit']]);
+    $vehiculo = $stmt->fetch();
+
+    if ($vehiculo && !empty($vehiculo['rev_tecnica'])) {
+        $hoy = new DateTime();
+        $venc = new DateTime($vehiculo['rev_tecnica']);
+        $diff = $hoy->diff($venc);
+        if ($venc < $hoy) {
+            $alert_msg = "⚠️ Rev. Técnica vencida hace {$diff->days} días.";
+        } elseif ($diff->days <= 30) {
+            $alert_msg = "⚠️ Rev. Técnica vence en {$diff->days} días.";
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -10,23 +32,22 @@ if ($_SESSION['rol'] !== 'admin') {
     <meta charset="UTF-8">
     <title>Ficha Vehículo - SIGEF</title>
     <link rel="stylesheet" href="../styles.css">
-    <!-- Font Awesome para íconos (como en CRM_ELOG) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
     <?php require '../includes/header.php'; ?>
 
     <div class="container">
-        <div class="card">
-            <!-- Ícono + Título -->
-            <h2>
-                <i class="fas fa-truck"></i> Ficha Vehículo
-            </h2>
+        <!-- Fila 1: Ícono y título fuera del formulario -->
+        <div class="page-title">
+            <h2><i class="fas fa-truck"></i> Ficha Vehículo</h2>
+        </div>
 
+        <div class="card">
             <form method="POST" action="vehiculos_logic.php" id="formVehiculo">
                 <input type="hidden" name="id_vehiculo" value="<?= $vehiculo['id_vehiculo'] ?? '' ?>">
 
-                <!-- Fila 1: Labels -->
+                <!-- Fila 2: Labels -->
                 <div class="form-row">
                     <label>Marca</label>
                     <label>Modelo</label>
@@ -35,7 +56,7 @@ if ($_SESSION['rol'] !== 'admin') {
                     <label>Nombre Vehículo</label>
                 </div>
 
-                <!-- Fila 2: Campos -->
+                <!-- Fila 3: Campos -->
                 <div class="form-row">
                     <input type="text" name="marca" value="<?= htmlspecialchars($vehiculo['marca'] ?? '') ?>" required>
                     <input type="text" name="modelo" value="<?= htmlspecialchars($vehiculo['modelo'] ?? '') ?>" required>
@@ -44,7 +65,7 @@ if ($_SESSION['rol'] !== 'admin') {
                     <input type="text" name="nombre_vehiculo" value="<?= htmlspecialchars($vehiculo['nombre_vehiculo'] ?? '') ?>" required>
                 </div>
 
-                <!-- Fila 3: Labels (con permiso_circ al inicio) -->
+                <!-- Fila 4: Labels (con permiso_circ al inicio) -->
                 <div class="form-row">
                     <label>Permiso Circulación</label>
                     <label>Revisión Técnica</label>
@@ -54,7 +75,7 @@ if ($_SESSION['rol'] !== 'admin') {
                     <label>N° Póliza</label>
                 </div>
 
-                <!-- Fila 4: Campos + Botón Guardar al final -->
+                <!-- Fila 5: Campos -->
                 <div class="form-row">
                     <input type="date" name="permiso_circ" value="<?= $vehiculo['permiso_circ'] ?? '' ?>">
                     <input type="date" name="rev_tecnica" value="<?= $vehiculo['rev_tecnica'] ?? '' ?>">
@@ -65,6 +86,10 @@ if ($_SESSION['rol'] !== 'admin') {
                     </select>
                     <input type="text" name="aseguradora" value="<?= htmlspecialchars($vehiculo['aseguradora'] ?? '') ?>">
                     <input type="text" name="nro_poliza" value="<?= htmlspecialchars($vehiculo['nro_poliza'] ?? '') ?>">
+                </div>
+
+                <!-- Fila 6: Botón Guardar (alineado a la derecha) -->
+                <div class="form-row form-actions">
                     <button type="submit" class="btn-save">
                         <i class="fas fa-save"></i> Guardar
                     </button>
@@ -76,7 +101,7 @@ if ($_SESSION['rol'] !== 'admin') {
             <?php endif; ?>
         </div>
 
-        <!-- Tabla de vehículos (cargada vía JS) -->
+        <!-- Tabla de vehículos -->
         <div class="card">
             <h3>Registro de Vehículos</h3>
             <table class="data-table" id="tablaVehiculos">
@@ -91,7 +116,6 @@ if ($_SESSION['rol'] !== 'admin') {
     </div>
 
     <script>
-        // Cargar tabla desde API
         fetch('../api/get_vehiculo.php')
             .then(r => r.json())
             .then(data => {
@@ -112,35 +136,28 @@ if ($_SESSION['rol'] !== 'admin') {
     </script>
 
     <style>
-        /* Estilos para el formulario en filas */
-        .form-row {
-            display: flex;
-            gap: 0.8rem;
-            margin-bottom: 0.8rem;
-            flex-wrap: wrap;
-            align-items: center;
+        /* Estilo para el título de página (fuera del form) */
+        .page-title {
+            margin-bottom: 1.2rem;
         }
-        .form-row label, .form-row input, .form-row select, .form-row button {
-            flex: 1;
-            min-width: 120px;
+        .page-title h2 {
+            font-size: 1.6rem;
+            color: var(--dark);
         }
-        .form-row input[type="number"], .form-row input[type="date"] {
-            min-width: 140px;
+
+        /* Quitar negrita de los labels */
+        .form-row label {
+            font-weight: normal; /* ← Cambio solicitado */
+            color: var(--dark);
         }
-        .form-row button {
-            flex: 0 0 auto;
-            background: #27ae60;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            cursor: pointer;
+
+        /* Alinear botón a la derecha en su propia fila */
+        .form-actions {
+            justify-content: flex-end;
+            margin-top: 1rem;
         }
-        .form-row button:hover {
-            background: #219653;
-        }
-        .btn-save {
-            margin-left: auto; /* empuja el botón a la derecha */
+        .form-actions .btn-save {
+            margin: 0;
         }
     </style>
 </body>
