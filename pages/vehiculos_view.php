@@ -26,6 +26,7 @@ if (isset($_GET['edit'])) {
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -38,45 +39,41 @@ if (isset($_GET['edit'])) {
     <?php require '../includes/header.php'; ?>
 
     <div class="container">
-        <!-- Fila 1: Ícono y título fuera del formulario -->
+        <!-- Título fuera del formulario -->
         <div class="page-title">
             <h2><i class="fas fa-truck"></i> Ficha Vehículo</h2>
         </div>
 
         <div class="card">
-            <form method="POST" action="vehiculos_logic.php" id="formVehiculo">
+            <form method="POST" action="vehiculos_logic.php">
                 <input type="hidden" name="id_vehiculo" value="<?= $vehiculo['id_vehiculo'] ?? '' ?>">
 
-                <!-- Fila 2: Labels -->
-                <div class="form-row">
-                    <label>          Marca</label>
-                    <label>          Modelo</label>
-                    <label>          Año</label>
-                    <label>          Patente</label>
-                    <label>          Nombre Vehículo</label>
-                </div>
+                <div class="form-grid">
+                    <!-- Fila 1: Labels superiores -->
+                    <label>Marca</label>
+                    <label>Modelo</label>
+                    <label>Año</label>
+                    <label>Patente</label>
+                    <label>Nombre Vehículo</label>
+                    <label></label> <!-- Espaciador si se necesita -->
 
-                <!-- Fila 3: Campos -->
-                <div class="form-row">
+                    <!-- Fila 2: Campos 1-5 -->
                     <input type="text" name="marca" value="<?= htmlspecialchars($vehiculo['marca'] ?? '') ?>" required>
                     <input type="text" name="modelo" value="<?= htmlspecialchars($vehiculo['modelo'] ?? '') ?>" required>
                     <input type="number" name="year" value="<?= $vehiculo['year'] ?? '' ?>" required>
                     <input type="text" name="patente" value="<?= htmlspecialchars($vehiculo['patente'] ?? '') ?>" required>
                     <input type="text" name="nombre_vehiculo" value="<?= htmlspecialchars($vehiculo['nombre_vehiculo'] ?? '') ?>" required>
-                </div>
+                    <div></div> <!-- Espaciador -->
 
-                <!-- Fila 4: Labels (con permiso_circ al inicio) -->
-                <div class="form-row">
+                    <!-- Fila 3: Labels inferiores -->
                     <label>Permiso Circulación</label>
-                    <label>         Revisión Técnica</label>
+                    <label>Revisión Técnica</label>
                     <label>N° SOAP</label>
                     <label>Seguro</label>
                     <label>Aseguradora</label>
                     <label>N° Póliza</label>
-                </div>
 
-                <!-- Fila 5: Campos -->
-                <div class="form-row">
+                    <!-- Fila 4: Campos inferiores -->
                     <input type="date" name="permiso_circ" value="<?= $vehiculo['permiso_circ'] ?? '' ?>">
                     <input type="date" name="rev_tecnica" value="<?= $vehiculo['rev_tecnica'] ?? '' ?>">
                     <input type="number" name="nro_soap" value="<?= $vehiculo['nro_soap'] ?? '' ?>">
@@ -88,8 +85,8 @@ if (isset($_GET['edit'])) {
                     <input type="text" name="nro_poliza" value="<?= htmlspecialchars($vehiculo['nro_poliza'] ?? '') ?>">
                 </div>
 
-                <!-- Fila 6: Botón Guardar (alineado a la derecha) -->
-                <div class="form-row form-actions">
+                <!-- Botón Guardar fuera del grid, alineado a la derecha -->
+                <div class="form-actions">
                     <button type="submit" class="btn-save">
                         <i class="fas fa-save"></i> Guardar
                     </button>
@@ -136,28 +133,78 @@ if (isset($_GET['edit'])) {
     </script>
 
     <style>
-        /* Estilo para el título de página (fuera del form) */
-        .page-title {
-            margin-bottom: 1.2rem;
-        }
+        /* Título de página */
         .page-title h2 {
             font-size: 1.6rem;
             color: var(--dark);
+            margin-bottom: 1.2rem;
         }
 
-        /* Quitar negrita de los labels */
-        .form-row label {
-            font-weight: normal; /* ← Cambio solicitado */
+        /* Grid de formulario: 6 columnas */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.8rem;
+            margin-bottom: 1.2rem;
+        }
+
+        /* Labels centrados */
+        .form-grid label {
+            text-align: center;
+            font-weight: normal;
             color: var(--dark);
+            margin-bottom: 0.3rem;
         }
 
-        /* Alinear botón a la derecha en su propia fila */
+        /* Campos ocupan toda la celda */
+        .form-grid input,
+        .form-grid select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+
+        /* Espaciadores vacíos no deben tener margen ni borde */
+        .form-grid > div:empty {
+            visibility: hidden;
+        }
+
+        /* Botón Guardar */
         .form-actions {
+            display: flex;
             justify-content: flex-end;
-            margin-top: 1rem;
         }
         .form-actions .btn-save {
-            margin: 0;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .form-actions .btn-save:hover {
+            background: var(--secondary-hover);
+        }
+
+        /* Responsive: en móviles, usar 2 columnas */
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .form-grid label {
+                grid-column: span 2;
+                text-align: left;
+            }
+            .form-grid > div:empty {
+                display: none;
+            }
         }
     </style>
 </body>
