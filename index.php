@@ -8,8 +8,10 @@ if (isset($_SESSION['user_id'])) {
     $rol = $_SESSION['rol'] ?? 'basico';
     error_log("index.php: usuario autenticado. Rol: $rol");
     if ($rol === 'admin') {
+        error_log("index.php: redirigiendo a /pages/vehiculos_view.php");
         header("Location: /pages/vehiculos_view.php");
     } else {
+        error_log("index.php: redirigiendo a /pages/dashboard_basico.php");
         header("Location: /pages/dashboard_basico.php");
     }
     exit;
