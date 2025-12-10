@@ -82,7 +82,7 @@
         <!-- Logo -->
         <img src="assets/logo.png" alt="Logo SIGEF" class="login-logo" onerror="this.style.display='none'">
 
-        <h2><i class="fas fa-lock"></i> Acceso al CRM</h2>
+        <h2><i class="fas fa-lock"></i> Acceso al Sistema</h2>
 
         <?php if (isset($_GET['error'])): ?>
             <div class="error">

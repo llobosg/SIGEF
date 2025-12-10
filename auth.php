@@ -9,7 +9,7 @@ require_once 'config.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     error_log("auth.php: acceso directo (no POST). Redirigiendo a login.php");
-    header("Location: login.php");
+    header("Location: /login.php");
     exit;
 }
 
@@ -20,7 +20,7 @@ error_log("auth.php: credenciales recibidas - RUT: '$rut', Password: " . ($passw
 
 if (!$rut || !$password) {
     error_log("auth.php: faltan credenciales");
-    header("Location: login.php?error=1");
+    header("Location: /login.php?error=1");
     exit;
 }
 
@@ -48,13 +48,13 @@ try {
         exit;
     } else {
         error_log("auth.php: usuario NO encontrado (credenciales inválidas)");
-        header("Location: login.php?error=1");
+        header("Location: /login.php?error=1");
         exit;
     }
 } catch (Exception $e) {
     error_log("auth.php: ERROR EN BASE DE DATOS: " . $e->getMessage());
     // En producción, no muestres el error
-    header("Location: login.php?error=1");
+    header("Location: /login.php?error=1");
     exit;
 }
 ?>
