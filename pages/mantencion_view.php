@@ -17,11 +17,11 @@ if ($_SESSION['rol'] !== 'admin') {
 
     <div class="container">
         <div class="page-title">
-            <h2><i class="fas fa-wrench"></i> Mantención de Vehículos</h2>
+            <h2><i class="fas fa-wrench"></i> Gastos de Flota</h2>
         </div>
 
         <!-- BÚSQUEDA INTELIGENTE -->
-        <h3><i class="fas fa-search"></i> Búsqueda inteligente</h3>
+        <div class="fas fa-search">Búsqueda inteligente</div>
         <input type="text" id="busquedaVehiculo" 
                placeholder="Buscar por patente, marca, modelo o nombre del vehículo..."
                style="width: 100%; padding: 0.6rem; margin: 0.5rem 0 1.5rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9rem;">
@@ -68,14 +68,14 @@ if ($_SESSION['rol'] !== 'admin') {
 
             <div style="margin-top: 1.7rem;">
                 <button id="btnAgregarMantencion" class="btn-primary">
-                    <i class="fas fa-plus"></i> Agregar Registro
+                    <i class="fas fa-plus"></i> Agregar Gasto
                 </button>
             </div>
         </div>
 
         <!-- HISTORIAL DE MANTENCIONES -->
         <div class="card">
-            <h3><i class="fas fa-history"></i> Historial de Mantenciones</h3>
+            <h3><i class="fas fa-history"></i> Historial de Gastos</h3>
             <div class="table-container">
                 <table class="data-table">
                     <thead>
