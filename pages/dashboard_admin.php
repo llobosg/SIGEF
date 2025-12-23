@@ -61,7 +61,7 @@
             </div>
             <div style="background: #f0fdf4; padding: 1.2rem; border-radius: 10px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.08); border: 1px solid #e9ecef;">
                 <h3 style="margin: 0 0 0.8rem 0; color: #8e44ad; font-size: 1rem; font-weight: 600;">
-                    <i class="fas fa-wrench"></i> Mantenciones
+                    <i class="fas fa-wrench"></i> Gastos
                 </h3>
                 <p style="font-size: 2rem; font-weight: bold; color: #8e44ad; margin: 0;"><?= $totalMantenciones ?></p>
             </div>
@@ -76,7 +76,7 @@
 
         <!-- Últimas mantenciones -->
         <h3 style="margin: 1.5rem 0 1rem 0; color: #2c3e50; font-size: 1.1rem;">
-            <i class="fas fa-history"></i> Últimas Mantenciones
+            <i class="fas fa-history"></i> Últimos Gastos
         </h3>
 
         <div class="table-container">
