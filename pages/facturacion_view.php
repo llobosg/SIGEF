@@ -134,10 +134,14 @@ if (isset($_GET['edit'])) {
                                value="<?= htmlspecialchars($factura['tipo_monto'] ?? '') ?>" 
                                readonly required>
                     </div>
+                    <<!-- Campo oculto para el envío (con name) -->
+                    <input type="hidden" name="monto_m" id="monto_m_hidden" value="<?= $factura['monto_m'] ?? '' ?>">
+
+                    <!-- Campo de display solo para visualización (sin name) -->
                     <div class="field-item">
-                        <input type="number" name="monto_m" id="monto_m_display"
-                               value="<?= $factura['monto_m'] ?? '' ?>" 
-                               readonly required step="0.01">
+                        <input type="number" id="monto_m_display"
+                            value="<?= $factura['monto_m'] ?? '' ?>" 
+                            readonly required step="0.01" style="background-color: #f8f9fa;">
                     </div>
                     <div class="field-item">
                         <input type="number" name="qty_tipo_monto" id="qty_tipo_monto" 
@@ -291,11 +295,13 @@ if (isset($_GET['edit'])) {
                                 el.textContent = `${m.nombre_vehiculo} | ${m.tipo_monto} | ${m.tipo_personal} | $${parseFloat(m.monto).toLocaleString()}`;
                                 el.addEventListener('click', () => {
                                     if (<?= $esEdicion ? 'false' : 'true' ?>) {
+                                        // En la función de búsqueda, reemplaza:
                                         const campos = [
                                             { id: 'id_vehiculo', value: m.id_vehiculo || '' },
                                             { id: 'nombre_vehiculo_display', value: m.nombre_vehiculo || '' },
                                             { id: 'tipo_monto_display', value: m.tipo_monto || '' },
                                             { id: 'monto_m_display', value: m.monto || 0 },
+                                            { id: 'monto_m_hidden', value: m.monto || 0 }, // ← Campo oculto
                                             { id: 'monto_base', value: m.monto || 0 }
                                         ];
                                         
