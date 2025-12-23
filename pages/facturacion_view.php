@@ -249,7 +249,6 @@ if (isset($_GET['edit'])) {
                         <td>$${parseFloat(f.monto_m).toLocaleString()}</td>
                         <td>${f.qty_tipo_monto || '-'}</td>
                         <td>$${parseFloat(f.monto).toLocaleString()}</td>
-                        // DESPUÉS (correcto)
                         <td>
                             <a href="?edit=${f.id_factura}" class="btn-edit" title="Editar">
                                 <i class="fas fa-pencil-alt"></i>
