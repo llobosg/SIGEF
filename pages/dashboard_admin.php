@@ -17,7 +17,7 @@ $totalMantenciones = $pdo->query("SELECT COUNT(*) FROM mantencion")->fetchColumn
 $stmt = $pdo->prepare("
     SELECT m.id_mantencion, m.fecha_mant, m.nombre_vehiculo, m.kilometraje, 
            m.tipo_mant, m.taller, m.costo, p.nombre AS nombre_chofer
-    FROM mantencion m
+    FROM MANTENCION m
     LEFT JOIN PERSONAL p ON p.id_personal = (
         SELECT id_personal FROM PERSONAL LIMIT 1 -- placeholder; ajustar si se vincula
     )

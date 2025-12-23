@@ -1,8 +1,14 @@
 <?php
+// LOG: Inicio de ejecución
+error_log("[MANTENCION_VIEW] Inicio de carga de página");
+
 require '../session_check.php';
 if ($_SESSION['rol'] !== 'admin') {
+    error_log("[MANTENCION_VIEW] Acceso denegado: rol no es admin");
     die('Acceso denegado');
 }
+
+error_log("[MANTENCION_VIEW] Sesión verificada, rol=admin. Renderizando HTML.");
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -12,103 +18,12 @@ if ($_SESSION['rol'] !== 'admin') {
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-    <style>
-        .submodal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-        .submodal-content {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 600px;
-            position: relative;
-        }
-        .submodal-close {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 1.4rem;
-            cursor: pointer;
-            color: #999;
-        }
-        .datos-vehiculo {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin: 1.5rem 0;
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 6px;
-        }
-        .dato-item {
-            font-size: 0.9rem;
-        }
-        .dato-item strong {
-            display: block;
-            color: #2c3e50;
-        }
-        .table-container {
-            position: relative;
-            overflow-x: auto;
-        }
-        .totalizador {
-            text-align: right;
-            font-weight: bold;
-            margin-top: 0.5rem;
-            color: #27ae60;
-        }
-        .sortable { cursor: pointer; user-select: none; }
-        .sortable::after { content: " ↕"; opacity: 0.5; }
-        .form-group {
-            margin: 1rem 0;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.3rem;
-            font-weight: normal;
-            color: var(--dark);
-        }
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            font-size: 0.95rem;
-            box-sizing: border-box;
-        }
-        .form-actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1.5rem;
-        }
-        .form-actions button {
-            flex: 1;
-            padding: 0.5rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .btn-save { background: var(--secondary); color: white; }
-        .btn-cancel { background: #95a5a6; color: white; }
-        .btn-save:hover { background: var(--secondary-hover); }
-        .btn-cancel:hover { background: #7f8c8d; }
-    </style>
 </head>
 <body>
-    <?php require '../includes/header.php'; ?>
+    <?php 
+        error_log("[MANTENCION_VIEW] Incluyendo header.php");
+        require '../includes/header.php'; 
+    ?>
 
     <div class="container">
         <div class="page-title">
@@ -124,7 +39,7 @@ if ($_SESSION['rol'] !== 'admin') {
 
         <!-- Datos del vehículo -->
         <div id="panelVehiculo" class="card" style="display: none;">
-            <h3>Datos del Vehículo</h3>
+            <h3><i class="fas fa-car"></i> Datos del Vehículo</h3>
             <div id="datosVehiculo" class="datos-vehiculo"></div>
             <button id="btnAgregarMantencion" class="btn-save" style="margin-top: 1.2rem; padding: 0.5rem 1.2rem;">
                 <i class="fas fa-plus"></i> Agregar Registro
@@ -216,12 +131,14 @@ if ($_SESSION['rol'] !== 'admin') {
 
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
+        console.log("[JS] Inicio de script mantencion_view");
+        
         let vehiculoActual = null;
         let mantenciones = [];
 
-        // Búsqueda de vehículo: versión segura
         let busquedaTimeout;
         document.getElementById('busquedaVehiculo').addEventListener('input', function() {
+            console.log("[JS] Input detectado:", this.value);
             const term = this.value.trim();
             const div = document.getElementById('sugerenciasVehiculo');
             div.innerHTML = '';
@@ -229,35 +146,38 @@ if ($_SESSION['rol'] !== 'admin') {
 
             clearTimeout(busquedaTimeout);
             busquedaTimeout = setTimeout(() => {
+                console.log("[JS] Consultando API con término:", term);
                 fetch(`../api/get_vehiculos_busqueda.php?q=${encodeURIComponent(term)}`)
                     .then(r => {
-                        if (!r.ok) throw new Error('API error');
+                        console.log("[JS] Respuesta API:", r.status);
+                        if (!r.ok) throw new Error('API error ' + r.status);
                         return r.json();
                     })
                     .then(vehiculos => {
+                        console.log("[JS] Vehículos recibidos:", vehiculos);
                         div.innerHTML = '';
                         vehiculos.forEach(v => {
-                            // Crear elemento con addEventListener (no onclick inline)
                             const el = document.createElement('div');
                             el.style.padding = '0.5rem';
                             el.style.cursor = 'pointer';
                             el.style.borderBottom = '1px solid #eee';
                             el.textContent = `${v.patente} - ${v.marca} ${v.modelo} (${v.nombre_vehiculo})`;
                             el.addEventListener('click', () => {
+                                console.log("[JS] Vehículo seleccionado:", v);
                                 seleccionarVehiculo(v);
                             });
                             div.appendChild(el);
                         });
                     })
                     .catch(err => {
-                        console.error('Error en búsqueda:', err);
+                        console.error("[JS] Error en búsqueda:", err);
                         div.innerHTML = '<div style="padding:0.5rem;color:#e74c3c;">Error al cargar vehículos</div>';
                     });
             }, 300);
         });
 
         function seleccionarVehiculo(veh) {
-            // Asegurar que todos los campos existan
+            console.log("[JS] Procesando selección de vehículo:", veh);
             const safeVeh = {
                 id_vehiculo: veh.id_vehiculo || null,
                 patente: veh.patente || '',
@@ -277,7 +197,6 @@ if ($_SESSION['rol'] !== 'admin') {
             document.getElementById('busquedaVehiculo').value = `${safeVeh.patente} - ${safeVeh.marca} ${safeVeh.modelo}`;
             document.getElementById('sugerenciasVehiculo').innerHTML = '';
 
-            // Mostrar datos del vehículo
             const datosDiv = document.getElementById('datosVehiculo');
             datosDiv.innerHTML = `
                 <div class="dato-item"><strong>Marca</strong> ${safeVeh.marca}</div>
@@ -294,193 +213,19 @@ if ($_SESSION['rol'] !== 'admin') {
             `;
 
             document.getElementById('panelVehiculo').style.display = 'block';
-            cargarMantenciones();
+            console.log("[JS] Panel de vehículo mostrado");
         }
 
+        // Funciones placeholder para evitar errores
         function cargarMantenciones() {
-            if (!vehiculoActual) return;
-            fetch(`../api/get_mantenciones.php?id_vehiculo=${vehiculoActual.id_vehiculo}`)
-                .then(r => r.json())
-                .then(data => {
-                    mantenciones = data;
-                    renderizarTabla();
-                    document.getElementById('panelMantenciones').style.display = 'block';
-                });
+            console.log("[JS] cargarMantenciones() no implementado aún");
         }
-
-        function renderizarTabla() {
-            const tbody = document.getElementById('cuerpoMantenciones');
-            const total = mantenciones.reduce((sum, m) => sum + (parseFloat(m.costo) || 0), 0);
-            tbody.innerHTML = mantenciones.map(m => `
-                <tr>
-                    <td>${m.fecha_mant}</td>
-                    <td>${m.nombre_vehiculo}</td>
-                    <td>${m.kilometraje || '-'}</td>
-                    <td>${m.tipo_mant}</td>
-                    <td>${m.taller || '-'}</td>
-                    <td>$${parseFloat(m.costo).toLocaleString()}</td>
-                    <td>
-                        <a href="#" onclick="editarMantencion(${m.id_mantencion}); return false;">
-                            <i class="fas fa-pencil-alt" style="color:#27ae60;"></i>
-                        </a>
-                        <a href="#" onclick="eliminarMantencion(${m.id_mantencion}); return false;" style="margin-left: 8px;">
-                            <i class="fas fa-trash" style="color:#e74c3c;"></i>
-                        </a>
-                    </td>
-                </tr>
-            `).join('');
-            document.getElementById('totalCostos').textContent = `Total Costos: $${total.toLocaleString()}`;
-        }
-
-        // Submodal
-        document.getElementById('btnAgregarMantencion').addEventListener('click', () => {
-            document.getElementById('formMantencion').reset();
-            document.getElementById('id_mantencion').value = '';
-            document.getElementById('id_vehiculo').value = vehiculoActual.id_vehiculo;
-            document.getElementById('submodalMantencion').style.display = 'flex';
-        });
-
-        document.getElementById('cerrarSubmodal').addEventListener('click', () => {
-            document.getElementById('submodalMantencion').style.display = 'none';
-        });
-
-        document.getElementById('btnCancelarSubmodal').addEventListener('click', () => {
-            document.getElementById('submodalMantencion').style.display = 'none';
-        });
-
-        // Guardar
-        document.getElementById('formMantencion').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const data = {
-                id_mantencion: document.getElementById('id_mantencion').value || null,
-                id_vehiculo: document.getElementById('id_vehiculo').value,
-                fecha_mant: document.getElementById('fecha_mant').value,
-                tipo_mant: document.getElementById('tipo_mant').value,
-                kilometraje: document.getElementById('kilometraje').value || null,
-                taller: document.getElementById('taller').value || null,
-                reparacion: document.getElementById('reparacion').value || null,
-                notas_mant: document.getElementById('notas_mant').value || null,
-                costo: document.getElementById('costo').value
-            };
-
-            // Validación frontend básica
-            if (!data.fecha_mant || !data.tipo_mant || !data.costo) {
-                Toastify({
-                    text: "⚠️ Campos obligatorios incompletos",
-                    duration: 3000,
-                    gravity: "top",
-                    position: "right",
-                    backgroundColor: "#e74c3c"
-                }).showToast();
-                return;
-            }
-
-            fetch('../api/mantencion_logic.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            })
-            .then(r => r.json())
-            .then(res => {
-                if (res.success) {
-                    Toastify({
-                        text: res.message,
-                        duration: 3000,
-                        gravity: "top",
-                        position: "right",
-                        backgroundColor: "#27ae60"
-                    }).showToast();
-                    document.getElementById('submodalMantencion').style.display = 'none';
-                    cargarMantenciones();
-                } else {
-                    Toastify({
-                        text: "❌ " + res.message,
-                        duration: 4000,
-                        gravity: "top",
-                        position: "right",
-                        backgroundColor: "#e74c3c"
-                    }).showToast();
-                }
-            })
-            .catch(err => {
-                Toastify({
-                    text: "⚠️ Error de conexión",
-                    duration: 3000,
-                    gravity: "top",
-                    position: "right",
-                    backgroundColor: "#e74c3c"
-                }).showToast();
-            });
-        });
-
         function editarMantencion(id) {
-            const m = mantenciones.find(m => m.id_mantencion == id);
-            if (!m) return;
-            document.getElementById('id_mantencion').value = m.id_mantencion;
-            document.getElementById('id_vehiculo').value = vehiculoActual.id_vehiculo;
-            document.getElementById('fecha_mant').value = m.fecha_mant;
-            document.getElementById('tipo_mant').value = m.tipo_mant;
-            document.getElementById('kilometraje').value = m.kilometraje || '';
-            document.getElementById('taller').value = m.taller || '';
-            document.getElementById('reparacion').value = m.reparacion || '';
-            document.getElementById('notas_mant').value = m.notas_mant || '';
-            document.getElementById('costo').value = m.costo;
-            document.getElementById('submodalMantencion').style.display = 'flex';
+            console.log("[JS] editarMantencion() no implementado aún");
         }
-
         function eliminarMantencion(id) {
-            if (!confirm('¿Eliminar este registro de mantención?')) return;
-            fetch(`../api/mantencion_logic.php?id=${id}`, { method: 'DELETE' })
-                .then(r => r.json())
-                .then(res => {
-                    if (res.success) {
-                        Toastify({
-                            text: res.message,
-                            duration: 3000,
-                            gravity: "top",
-                            position: "right",
-                            backgroundColor: "#27ae60"
-                        }).showToast();
-                        cargarMantenciones();
-                    } else {
-                        Toastify({
-                            text: "❌ " + res.message,
-                            duration: 4000,
-                            gravity: "top",
-                            position: "right",
-                            backgroundColor: "#e74c3c"
-                        }).showToast();
-                    }
-                })
-                .catch(err => {
-                    Toastify({
-                        text: "⚠️ Error al eliminar",
-                        duration: 3000,
-                        gravity: "top",
-                        position: "right",
-                        backgroundColor: "#e74c3c"
-                    }).showToast();
-                });
+            console.log("[JS] eliminarMantencion() no implementado aún");
         }
-
-        // Ordenamiento
-        document.querySelectorAll('.sortable').forEach(th => {
-            th.addEventListener('click', () => {
-                const col = th.dataset.col;
-                const order = th.classList.contains('asc') ? 'desc' : 'asc';
-                document.querySelectorAll('.sortable').forEach(t => t.classList.remove('asc', 'desc'));
-                th.classList.add(order);
-                mantenciones.sort((a, b) => {
-                    let valA = a[col] || '', valB = b[col] || '';
-                    if (!isNaN(valA) && !isNaN(valB)) {
-                        valA = parseFloat(valA); valB = parseFloat(valB);
-                    }
-                    if (order === 'asc') return valA > valB ? 1 : -1;
-                    else return valA < valB ? 1 : -1;
-                });
-                renderizarTabla();
-            });
-        });
     </script>
 </body>
 </html>
