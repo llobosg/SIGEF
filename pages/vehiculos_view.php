@@ -47,7 +47,6 @@ if (isset($_GET['edit'])) {
         <div class="card">
             <form method="POST" action="vehiculos_logic.php">
                 <input type="hidden" name="id_vehiculo" value="<?= $vehiculo['id_vehiculo'] ?? '' ?>">
-
                 <div class="form-grid">
                     <!-- Fila 1: Labels superiores -->
                     <label>Marca</label>
