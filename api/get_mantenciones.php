@@ -1,5 +1,4 @@
 <?php
-// api/get_mantenciones.php
 header('Content-Type: application/json');
 require '../config.php';
 
@@ -18,6 +17,5 @@ $stmt = $pdo->prepare("
     ORDER BY fecha_mant DESC
 ");
 $stmt->execute([$idVehiculo]);
-$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-echo json_encode($data);
+echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
 ?>

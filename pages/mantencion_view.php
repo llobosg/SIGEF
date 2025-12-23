@@ -12,6 +12,72 @@ if ($_SESSION['rol'] !== 'admin') {
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <style>
+        .submodal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .submodal-content {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+        }
+        .submodal-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: #999;
+        }
+        .form-group {
+            margin: 1rem 0;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-weight: normal;
+            color: var(--dark);
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+        .form-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        .form-actions button {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-save { background: var(--secondary); color: white; }
+        .btn-cancel { background: #95a5a6; color: white; }
+        .btn-save:hover { background: var(--secondary-hover); }
+        .btn-cancel:hover { background: #7f8c8d; }
+    </style>
 </head>
 <body>
     <?php require '../includes/header.php'; ?>
@@ -28,14 +94,21 @@ if ($_SESSION['rol'] !== 'admin') {
                    placeholder="Buscar por patente, marca, modelo o nombre..." 
                    autocomplete="off"
                    style="width: 100%; padding: 0.5rem; margin: 0.5rem 0; border: 1px solid var(--border); border-radius: 4px;">
-            <div id="sugerenciasVehiculo" class="sugerencias" 
-                 style="position: absolute; z-index: 1000; background: white; border: 1px solid #ddd; width: 100%; max-height: 200px; overflow-y: auto;"></div>
+            <div id="resultadosBusqueda" 
+                 style="position: absolute; z-index: 1000; background: white; border: 1px solid #ddd; width: 100%; max-height: 200px; overflow-y: auto; display: none;"></div>
         </div>
 
         <!-- Datos del vehículo -->
         <div id="panelVehiculo" class="card" style="display: none;">
-            <h3><i class="fas fa-car"></i> Datos del Vehículo</h3>
-            <div id="datosVehiculo" class="datos-vehiculo"></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3><i class="fas fa-car"></i> Datos del Vehículo</h3>
+                <button type="button" onclick="cerrarPanelVehiculo()" 
+                        style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #6c757d;">
+                    &times;
+                </button>
+            </div>
+            <div id="datosVehiculo" class="datos-vehiculo" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;"></div>
+            
             <button id="btnAgregarMantencion" class="btn-save" style="margin-top: 1.2rem; padding: 0.5rem 1.2rem;">
                 <i class="fas fa-plus"></i> Agregar Registro
             </button>
@@ -45,7 +118,7 @@ if ($_SESSION['rol'] !== 'admin') {
         <div id="panelMantenciones" class="card" style="display: none;">
             <h3><i class="fas fa-history"></i> Historial de Mantenciones</h3>
             <div class="table-container">
-                <table class="data-table" id="tablaMantenciones">
+                <table class="data-table">
                     <thead>
                         <tr>
                             <th>Fecha</th>
@@ -59,98 +132,367 @@ if ($_SESSION['rol'] !== 'admin') {
                     </thead>
                     <tbody id="cuerpoMantenciones"></tbody>
                 </table>
-                <div class="totalizador" id="totalCostos">Total Costos: $0</div>
+                <div class="totalizador" id="totalCostos" style="text-align: right; font-weight: bold; margin-top: 0.5rem; color: #27ae60;">
+                    Total Costos: $0
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Submodal (placeholder) -->
-    <div id="submodalMantencion" class="submodal" style="display:none;">
+    <!-- Submodal -->
+    <div id="submodalMantencion" class="submodal">
         <div class="submodal-content">
-            <span class="submodal-close">&times;</span>
-            <h3>Registro de Mantenciones</h3>
-            <p>Submodal en desarrollo.</p>
+            <span class="submodal-close" id="cerrarSubmodal">&times;</span>
+            <h3 id="tituloSubmodal">Registro de Mantenciones / Gastos</h3>
+            
+            <form id="formMantencion">
+                <input type="hidden" id="id_mantencion">
+                <input type="hidden" id="id_vehiculo">
+
+                <div class="form-group">
+                    <label>Fecha *</label>
+                    <input type="date" id="fecha_mant" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo Mantención *</label>
+                    <select id="tipo_mant" required>
+                        <option value="Carga Petróleo">Carga Petróleo</option>
+                        <option value="Correctiva">Correctiva</option>
+                        <option value="Preventiva">Preventiva</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Kilometraje</label>
+                    <input type="number" id="kilometraje" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label>Taller</label>
+                    <input type="text" id="taller">
+                </div>
+
+                <div class="form-group">
+                    <label>Reparación</label>
+                    <input type="text" id="reparacion">
+                </div>
+
+                <div class="form-group">
+                    <label>Notas</label>
+                    <textarea id="notas_mant" rows="2"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Costo *</label>
+                    <input type="number" id="costo" required min="0" step="0.01">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-save">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                    <button type="button" id="btnCancelarSubmodal" class="btn-cancel">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
+        // ========== FUNCIONES GLOBALES DE NOTIFICACIÓN ==========
+        function mostrarNotificacion(mensaje, tipo = 'info') {
+            const bg = tipo === 'exito' ? '#27ae60' : 
+                       tipo === 'error' ? '#e74c3c' : 
+                       tipo === 'warning' ? '#f39c12' : '#3498db';
+            Toastify({
+                text: mensaje,
+                duration: 4000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: bg
+            }).showToast();
+        }
+
+        window.exito = (msg) => mostrarNotificacion(msg, 'exito');
+        window.error = (msg) => mostrarNotificacion(msg, 'error');
+        window.warning = (msg) => mostrarNotificacion(msg, 'warning');
+
+        // ========== VARIABLES DE ESTADO ==========
+        let vehiculoActual = null;
+        let mantenciones = [];
+
+        // ========== INICIALIZACIÓN ==========
         document.addEventListener('DOMContentLoaded', function() {
-            console.log("[DEBUG] DOM listo. Iniciando script de mantención.");
+            console.log('[SIGEF] Iniciando módulo de Mantención');
 
-            // Delegación de eventos para búsqueda
-            document.addEventListener('input', function(e) {
-                if (e.target && e.target.id === 'busquedaVehiculo') {
-                    console.log("[DEBUG] Input detectado:", e.target.value);
-                    const term = e.target.value.trim();
-                    const contenedor = document.getElementById('sugerenciasVehiculo');
-                    if (contenedor) contenedor.innerHTML = '';
+            // Configurar elementos
+            document.getElementById('btnAgregarMantencion').addEventListener('click', () => abrirSubmodal());
+            document.getElementById('cerrarSubmodal').addEventListener('click', cerrarSubmodal);
+            document.getElementById('btnCancelarSubmodal').addEventListener('click', cerrarSubmodal);
+            document.getElementById('formMantencion').addEventListener('submit', guardarMantencion);
 
-                    if (term.length >= 2) {
-                        console.log("[DEBUG] Llamando a API con término:", term);
-                        fetch(`../api/get_vehiculos_busqueda.php?q=${encodeURIComponent(term)}`)
-                            .then(res => {
-                                console.log("[DEBUG] API respondió con estado:", res.status);
-                                if (!res.ok) throw new Error('API error');
-                                return res.json();
-                            })
-                            .then(data => {
-                                console.log("[DEBUG] Datos recibidos de API:", data);
-                                const contenedor = document.getElementById('sugerenciasVehiculo');
-                                if (!contenedor) return;
+            // Configurar búsqueda
+            configurarBusquedaInteligente();
 
-                                if (data.length === 0) {
-                                    contenedor.innerHTML = '<div style="padding:8px;color:#999;">Sin resultados</div>';
-                                    return;
-                                }
-
-                                contenedor.innerHTML = data.map(item => {
-                                    // Escapar comillas simples para onclick
-                                    const nombreEscapado = (item.nombre_vehiculo || '').replace(/'/g, "\\'");
-                                    const marcaEscapada = (item.marca || '').replace(/'/g, "\\'");
-                                    const modeloEscapado = (item.modelo || '').replace(/'/g, "\\'");
-                                    return `
-                                        <div onclick="seleccionarVehiculoSimple(${item.id_vehiculo}, '${item.patente}', '${marcaEscapada}', '${modeloEscapado}', '${nombreEscapado}')"
-                                             style="padding:8px;cursor:pointer;border-bottom:1px solid #eee;">
-                                            ${item.patente} - ${item.marca} ${item.modelo} (${item.nombre_vehiculo || ''})
-                                        </div>
-                                    `;
-                                }).join('');
-                            })
-                            .catch(err => {
-                                console.error("[ERROR] Fallo en llamada a API:", err);
-                                const contenedor = document.getElementById('sugerenciasVehiculo');
-                                if (contenedor) {
-                                    contenedor.innerHTML = '<div style="padding:8px;color:#e74c3c;">Error al cargar vehículos</div>';
-                                }
-                            });
-                    }
-                }
-            });
-
-            console.log("[DEBUG] Script de mantención inicializado correctamente.");
+            console.log('[SIGEF] Módulo inicializado');
         });
 
-        // Función global para selección
-        window.seleccionarVehiculoSimple = function(id, patente, marca, modelo, nombre) {
-            console.log("[DEBUG] Vehículo seleccionado:", {id, patente, marca, modelo, nombre});
-            document.getElementById('busquedaVehiculo').value = `${patente} - ${marca} ${modelo}`;
-            document.getElementById('sugerenciasVehiculo').innerHTML = '';
+        // ========== BÚSQUEDA INTELIGENTE ==========
+        function configurarBusquedaInteligente() {
+            const input = document.getElementById('busquedaVehiculo');
+            const resultadosDiv = document.getElementById('resultadosBusqueda');
+            let timeoutBusqueda = null;
 
-            // Mostrar datos básicos
-            const datosDiv = document.getElementById('datosVehiculo');
-            if (datosDiv) {
-                datosDiv.innerHTML = `
-                    <div class="dato-item"><strong>Patente</strong> ${patente}</div>
-                    <div class="dato-item"><strong>Marca</strong> ${marca}</div>
-                    <div class="dato-item"><strong>Modelo</strong> ${modelo}</div>
-                    <div class="dato-item"><strong>Nombre</strong> ${nombre || '-'}</div>
-                `;
+            input.addEventListener('input', function() {
+                const termino = this.value.trim();
+                resultadosDiv.style.display = 'none';
+                resultadosDiv.innerHTML = '';
+
+                if (timeoutBusqueda) clearTimeout(timeoutBusqueda);
+                if (termino.length < 2) return;
+
+                timeoutBusqueda = setTimeout(() => {
+                    buscarVehiculos(termino, resultadosDiv);
+                }, 300);
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!input.contains(e.target) && !resultadosDiv.contains(e.target)) {
+                    resultadosDiv.style.display = 'none';
+                }
+            });
+        }
+
+        async function buscarVehiculos(termino, contenedor) {
+            try {
+                const response = await fetch(`../api/get_vehiculos_busqueda.php?q=${encodeURIComponent(termino)}`);
+                if (!response.ok) throw new Error(`API error ${response.status}`);
+                const vehiculos = await response.json();
+
+                if (vehiculos.length === 0) {
+                    contenedor.innerHTML = '<div style="padding: 8px; color: #999;">Sin resultados</div>';
+                    contenedor.style.display = 'block';
+                    return;
+                }
+
+                contenedor.innerHTML = vehiculos.map(v => {
+                    const display = `${v.patente} - ${v.marca} ${v.modelo} (${v.nombre_vehiculo || ''})`;
+                    return `
+                        <div onclick="seleccionarVehiculo(${JSON.stringify(v).replace(/'/g, "\\'")})" 
+                             style="padding: 8px; cursor: pointer; border-bottom: 1px solid #eee;">
+                            ${display}
+                        </div>
+                    `;
+                }).join('');
+                contenedor.style.display = 'block';
+
+            } catch (error) {
+                console.error('[SIGEF] Error en búsqueda:', error);
+                error('Error al buscar vehículos');
+                contenedor.innerHTML = '<div style="padding: 8px; color: #e74c3c;">Error de conexión</div>';
+                contenedor.style.display = 'block';
+            }
+        }
+
+        // ========== SELECCIÓN DE VEHÍCULO ==========
+        function seleccionarVehiculo(vehiculo) {
+            try {
+                if (!vehiculo || !vehiculo.id_vehiculo) {
+                    throw new Error('Vehículo inválido');
+                }
+
+                vehiculoActual = vehiculo;
+                document.getElementById('busquedaVehiculo').value = `${vehiculo.patente} - ${vehiculo.marca} ${vehiculo.modelo}`;
+                document.getElementById('resultadosBusqueda').style.display = 'none';
+
+                mostrarDatosVehiculo(vehiculo);
+                document.getElementById('panelVehiculo').style.display = 'block';
+                cargarMantenciones(vehiculo.id_vehiculo);
+
+            } catch (error) {
+                console.error('[SIGEF] Error al seleccionar vehículo:', error);
+                error('Error al procesar vehículo');
+            }
+        }
+
+        function mostrarDatosVehiculo(veh) {
+            const div = document.getElementById('datosVehiculo');
+            if (!div) return;
+
+            div.innerHTML = `
+                <div><strong>Marca:</strong> ${veh.marca || '-'}</div>
+                <div><strong>Modelo:</strong> ${veh.modelo || '-'}</div>
+                <div><strong>Año:</strong> ${veh.year || '-'}</div>
+                <div><strong>Patente:</strong> ${veh.patente || '-'}</div>
+                <div><strong>Nombre:</strong> ${veh.nombre_vehiculo || '-'}</div>
+                <div><strong>Permiso Circ.:</strong> ${veh.permiso_circ || '-'}</div>
+                <div><strong>Rev. Técnica:</strong> ${veh.rev_tecnica || '-'}</div>
+                <div><strong>N° SOAP:</strong> ${veh.nro_soap || '-'}</div>
+                <div><strong>Seguro:</strong> ${veh.seguro || '-'}</div>
+                <div><strong>Aseguradora:</strong> ${veh.aseguradora || '-'}</div>
+                <div><strong>N° Póliza:</strong> ${veh.nro_poliza || '-'}</div>
+            `;
+        }
+
+        function cerrarPanelVehiculo() {
+            document.getElementById('panelVehiculo').style.display = 'none';
+            document.getElementById('panelMantenciones').style.display = 'none';
+            document.getElementById('busquedaVehiculo').value = '';
+            vehiculoActual = null;
+            mantenciones = [];
+        }
+
+        // ========== CARGA DE MANTENCIONES ==========
+        async function cargarMantenciones(idVehiculo) {
+            try {
+                const response = await fetch(`../api/get_mantenciones.php?id_vehiculo=${idVehiculo}`);
+                if (!response.ok) throw new Error(`API error ${response.status}`);
+                mantenciones = await response.json();
+                renderizarTablaMantenciones();
+                document.getElementById('panelMantenciones').style.display = 'block';
+            } catch (error) {
+                console.error('[SIGEF] Error al cargar mantenciones:', error);
+                warning('No se pudieron cargar las mantenciones');
+                mantenciones = [];
+                renderizarTablaMantenciones();
+                document.getElementById('panelMantenciones').style.display = 'block';
+            }
+        }
+
+        function renderizarTablaMantenciones() {
+            const tbody = document.getElementById('cuerpoMantenciones');
+            const total = mantenciones.reduce((sum, m) => sum + (parseFloat(m.costo) || 0), 0);
+            
+            tbody.innerHTML = mantenciones.map(m => `
+                <tr>
+                    <td>${m.fecha_mant || '-'}</td>
+                    <td>${m.nombre_vehiculo || '-'}</td>
+                    <td>${m.kilometraje || '-'}</td>
+                    <td>${m.tipo_mant || '-'}</td>
+                    <td>${m.taller || '-'}</td>
+                    <td>$${parseFloat(m.costo || 0).toLocaleString()}</td>
+                    <td>
+                        <button type="button" onclick="editarMantencion(${m.id_mantencion})" style="background: none; border: none; color: #27ae60; cursor: pointer;">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                        <button type="button" onclick="eliminarMantencion(${m.id_mantencion})" style="background: none; border: none; color: #e74c3c; cursor: pointer; margin-left: 8px;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            document.getElementById('totalCostos').textContent = `Total Costos: $${total.toLocaleString()}`;
+        }
+
+        // ========== SUBMODAL ==========
+        function abrirSubmodal(mantencion = null) {
+            const titulo = document.getElementById('tituloSubmodal');
+            const form = document.getElementById('formMantencion');
+            form.reset();
+            
+            if (mantencion) {
+                // Modo edición
+                document.getElementById('id_mantencion').value = mantencion.id_mantencion;
+                document.getElementById('id_vehiculo').value = vehiculoActual.id_vehiculo;
+                document.getElementById('fecha_mant').value = mantencion.fecha_mant;
+                document.getElementById('tipo_mant').value = mantencion.tipo_mant;
+                document.getElementById('kilometraje').value = mantencion.kilometraje || '';
+                document.getElementById('taller').value = mantencion.taller || '';
+                document.getElementById('reparacion').value = mantencion.reparacion || '';
+                document.getElementById('notas_mant').value = mantencion.notas_mant || '';
+                document.getElementById('costo').value = mantencion.costo;
+                titulo.textContent = 'Editar Mantención';
+            } else {
+                // Modo creación
+                document.getElementById('id_mantencion').value = '';
+                document.getElementById('id_vehiculo').value = vehiculoActual.id_vehiculo;
+                titulo.textContent = 'Registro de Mantenciones / Gastos';
+            }
+            
+            document.getElementById('submodalMantencion').style.display = 'flex';
+        }
+
+        function cerrarSubmodal() {
+            document.getElementById('submodalMantencion').style.display = 'none';
+        }
+
+        // ========== GUARDAR MANTENCIÓN ==========
+        async function guardarMantencion(e) {
+            e.preventDefault();
+            
+            const id_mantencion = document.getElementById('id_mantencion').value;
+            const data = {
+                id_mantencion: id_mantencion || null,
+                id_vehiculo: document.getElementById('id_vehiculo').value,
+                fecha_mant: document.getElementById('fecha_mant').value,
+                tipo_mant: document.getElementById('tipo_mant').value,
+                kilometraje: document.getElementById('kilometraje').value || null,
+                taller: document.getElementById('taller').value || null,
+                reparacion: document.getElementById('reparacion').value || null,
+                notas_mant: document.getElementById('notas_mant').value || null,
+                costo: document.getElementById('costo').value
+            };
+
+            // Validación frontend
+            if (!data.fecha_mant || !data.tipo_mant || !data.costo) {
+                error('Campos obligatorios incompletos');
+                return;
             }
 
-            document.getElementById('panelVehiculo').style.display = 'block';
-            console.log("[DEBUG] Panel de vehículo mostrado.");
-        };
+            try {
+                const response = await fetch('../api/mantencion_logic.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    exito(result.message);
+                    cerrarSubmodal();
+                    cargarMantenciones(vehiculoActual.id_vehiculo);
+                } else {
+                    error(result.message || 'Error al guardar');
+                }
+            } catch (error) {
+                console.error('[SIGEF] Error al guardar mantención:', error);
+                error('Error de conexión al guardar');
+            }
+        }
+
+        // ========== EDITAR Y ELIMINAR ==========
+        function editarMantencion(id) {
+            const mantencion = mantenciones.find(m => m.id_mantencion == id);
+            if (mantencion) {
+                abrirSubmodal(mantencion);
+            }
+        }
+
+        async function eliminarMantencion(id) {
+            if (!confirm('¿Eliminar este registro de mantención?')) return;
+            
+            try {
+                const response = await fetch(`../api/mantencion_logic.php?id=${id}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    exito(result.message);
+                    cargarMantenciones(vehiculoActual.id_vehiculo);
+                } else {
+                    error(result.message || 'Error al eliminar');
+                }
+            } catch (error) {
+                console.error('[SIGEF] Error al eliminar mantención:', error);
+                error('Error de conexión al eliminar');
+            }
+        }
     </script>
 </body>
 </html>
