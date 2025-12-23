@@ -86,7 +86,7 @@ if (isset($_GET['edit'])) {
 
                 <!-- Botón Guardar fuera del grid, alineado a la derecha -->
                 <div class="form-actions">
-                    <button type="submit" class="btn-save">
+                    <button type="submit" class="btn-primary">
                         <i class="fas fa-save"></i> Guardar
                     </button>
                 </div>

@@ -145,7 +145,7 @@ if ($_SESSION['rol'] !== 'admin') {
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn-save">
+                    <button type="submit" class="btn-primary">
                         <i class="fas fa-save"></i> Guardar
                     </button>
                     <button type="button" id="btnCancelarSubmodal" class="btn-cancel">
