@@ -132,119 +132,50 @@ error_log("[MANTENCION_VIEW] Sesión verificada, rol=admin. Renderizando HTML.")
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            console.log("[JS] DOM cargado, iniciando script mantencion_view");
+            console.log("[DEBUG] DOM listo. Iniciando script de mantención.");
 
-            // --- Todo el código JavaScript anterior va aquí adentro ---
-            
-            let vehiculoActual = null;
-            let mantenciones = [];
-
-            // Función auxiliar para log seguro
-            function log(...args) {
-                console.log('[MANTENCION_JS]', ...args);
-            }
-
-            // Verificar que los elementos esenciales existan
-            const busquedaInput = document.getElementById('busquedaVehiculo');
-            if (!busquedaInput) {
-                log("ERROR: No se encontró #busquedaVehiculo");
-                return;
-            }
-
-            let busquedaTimeout;
-            busquedaInput.addEventListener('input', function() {
-                log("Input detectado:", this.value);
-                const term = this.value.trim();
-                const div = document.getElementById('sugerenciasVehiculo');
-                if (div) div.innerHTML = '';
-                if (term.length < 2) return;
-
-                clearTimeout(busquedaTimeout);
-                busquedaTimeout = setTimeout(() => {
-                    log("Consultando API con término:", term);
-                    fetch(`../api/get_vehiculos_busqueda.php?q=${encodeURIComponent(term)}`)
-                        .then(r => {
-                            log("Respuesta API:", r.status);
-                            if (!r.ok) throw new Error('API error ' + r.status);
-                            return r.json();
-                        })
-                        .then(vehiculos => {
-                            log("Vehículos recibidos:", vehiculos);
-                            const div = document.getElementById('sugerenciasVehiculo');
-                            if (!div) return;
-                            div.innerHTML = '';
-                            vehiculos.forEach(v => {
-                                const el = document.createElement('div');
-                                el.style.padding = '0.5rem';
-                                el.style.cursor = 'pointer';
-                                el.style.borderBottom = '1px solid #eee';
-                                el.textContent = `${v.patente} - ${v.marca} ${v.modelo} (${v.nombre_vehiculo})`;
-                                el.addEventListener('click', () => {
-                                    log("Vehículo seleccionado:", v);
-                                    seleccionarVehiculo(v);
-                                });
-                                div.appendChild(el);
-                            });
-                        })
-                        .catch(err => {
-                            console.error("[JS] Error en búsqueda:", err);
-                            const div = document.getElementById('sugerenciasVehiculo');
-                            if (div) {
-                                div.innerHTML = '<div style="padding:0.5rem;color:#e74c3c;">Error al cargar vehículos</div>';
-                            }
-                        });
-                }, 300);
-            });
-
-            function seleccionarVehiculo(veh) {
-                log("Procesando selección de vehículo:", veh);
-                const safeVeh = {
-                    id_vehiculo: veh.id_vehiculo || null,
-                    patente: veh.patente || '',
-                    marca: veh.marca || '',
-                    modelo: veh.modelo || '',
-                    year: veh.year || '',
-                    nombre_vehiculo: veh.nombre_vehiculo || '',
-                    permiso_circ: veh.permiso_circ || '',
-                    rev_tecnica: veh.rev_tecnica || '',
-                    nro_soap: veh.nro_soap || '',
-                    seguro: veh.seguro || '',
-                    aseguradora: veh.aseguradora || '',
-                    nro_poliza: veh.nro_poliza || ''
-                };
-
-                vehiculoActual = safeVeh;
-                document.getElementById('busquedaVehiculo').value = `${safeVeh.patente} - ${safeVeh.marca} ${safeVeh.modelo}`;
-                const sugerencias = document.getElementById('sugerenciasVehiculo');
-                if (sugerencias) sugerencias.innerHTML = '';
-
-                const datosDiv = document.getElementById('datosVehiculo');
-                if (datosDiv) {
-                    datosDiv.innerHTML = `
-                        <div class="dato-item"><strong>Marca</strong> ${safeVeh.marca}</div>
-                        <div class="dato-item"><strong>Modelo</strong> ${safeVeh.modelo}</div>
-                        <div class="dato-item"><strong>Año</strong> ${safeVeh.year}</div>
-                        <div class="dato-item"><strong>Patente</strong> ${safeVeh.patente}</div>
-                        <div class="dato-item"><strong>Nombre</strong> ${safeVeh.nombre_vehiculo}</div>
-                        <div class="dato-item"><strong>Permiso Circ.</strong> ${safeVeh.permiso_circ || '-'}</div>
-                        <div class="dato-item"><strong>Rev. Técnica</strong> ${safeVeh.rev_tecnica || '-'}</div>
-                        <div class="dato-item"><strong>N° SOAP</strong> ${safeVeh.nro_soap || '-'}</div>
-                        <div class="dato-item"><strong>Seguro</strong> ${safeVeh.seguro || '-'}</div>
-                        <div class="dato-item"><strong>Aseguradora</strong> ${safeVeh.aseguradora || '-'}</div>
-                        <div class="dato-item"><strong>N° Póliza</strong> ${safeVeh.nro_poliza || '-'}</div>
-                    `;
+            try {
+                // 1. Verificar que el input de búsqueda exista
+                const inputBusqueda = document.getElementById('busquedaVehiculo');
+                if (!inputBusqueda) {
+                    console.error("[ERROR] No se encontró el elemento #busquedaVehiculo");
+                    return;
                 }
+                console.log("[DEBUG] Elemento #busquedaVehiculo encontrado.");
 
-                const panel = document.getElementById('panelVehiculo');
-                if (panel) panel.style.display = 'block';
-                log("Panel de vehículo mostrado");
+                // 2. Agregar evento de búsqueda
+                inputBusqueda.addEventListener('input', function(e) {
+                    console.log("[DEBUG] Input recibido:", e.target.value);
+                    const term = e.target.value.trim();
+                    const contenedor = document.getElementById('sugerenciasVehiculo');
+                    if (contenedor) contenedor.innerHTML = '';
+
+                    if (term.length >= 2) {
+                        console.log("[DEBUG] Llamando a API con término:", term);
+                        fetch(`../api/get_vehiculos_busqueda.php?q=${encodeURIComponent(term)}`)
+                            .then(res => {
+                                console.log("[DEBUG] API respondió con estado:", res.status);
+                                return res.json();
+                            })
+                            .then(data => {
+                                console.log("[DEBUG] Datos recibidos de API:", data);
+                                const contenedor = document.getElementById('sugerenciasVehiculo');
+                                if (!contenedor) return;
+                                contenedor.innerHTML = data.map(item => 
+                                    `<div style="padding:8px;cursor:pointer;border-bottom:1px solid #eee;">${item.patente} - ${item.marca} ${item.modelo}</div>`
+                                ).join('');
+                            })
+                            .catch(err => {
+                                console.error("[ERROR] Fallo en llamada a API:", err);
+                            });
+                    }
+                });
+
+                console.log("[DEBUG] Script de mantención inicializado correctamente.");
+
+            } catch (error) {
+                console.error("[ERROR CRÍTICO EN SCRIPT]", error);
             }
-
-            // Placeholder functions
-            window.cargarMantenciones = () => log("cargarMantenciones no implementado");
-            window.editarMantencion = (id) => log("editarMantencion", id);
-            window.eliminarMantencion = (id) => log("eliminarMantencion", id);
-
         });
         </script>
 </body>
