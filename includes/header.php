@@ -10,7 +10,7 @@ $rol = $_SESSION['rol'] ?? 'basico';
                 <i class="fas fa-tachometer-alt"></i> Dashboard
             </a>
             <a href="/pages/mantencion_view.php">
-                <i class="fas fa-wrench"></i> Gastos Flota
+                <i class="fas fa-wrench"></i> Gastos
             </a>
             <a href="/pages/facturacion_view.php">
                 <i class="fas fa-file-invoice"></i> Facturación
