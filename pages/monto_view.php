@@ -22,10 +22,9 @@ if (isset($_GET['edit'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <style>
-        /* Layout tradicional para el formulario de montos */
         .formulario-montos-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 0.8rem;
             margin: 1rem 0;
         }
@@ -53,10 +52,6 @@ if (isset($_GET['edit'])) {
             border: 1px solid #ccc;
             border-radius: 6px;
             font-size: 0.9rem;
-        }
-        .formulario-montos-grid .field-item input[readonly] {
-            background-color: #f8f9fa;
-            cursor: not-allowed;
         }
         @media (max-width: 768px) {
             .formulario-montos-grid {
@@ -106,14 +101,13 @@ if (isset($_GET['edit'])) {
                     <div class="label-item">Nombre Vehículo</div>
                     <div class="label-item">Tipo Monto</div>
                     <div class="label-item">Tipo Personal</div>
-                    <div class="label-item">Rol</div>
                     <div class="label-item">Monto ($)</div>
                     
                     <!-- Fila 2: Campos -->
                     <div class="field-item">
                         <input type="text" id="nombre_vehiculo_display" name="nombre_vehiculo" 
                                value="<?= htmlspecialchars($monto['nombre_vehiculo'] ?? '') ?>" 
-                               readonly required>
+                               required>
                     </div>
                     <div class="field-item">
                         <select name="tipo_monto" required>
@@ -128,13 +122,6 @@ if (isset($_GET['edit'])) {
                             <option value="">Seleccionar</option>
                             <option value="Chofer" <?= ($monto['tipo_personal'] ?? '') === 'Chofer' ? 'selected' : '' ?>>Chofer</option>
                             <option value="Peoneta" <?= ($monto['tipo_personal'] ?? '') === 'Peoneta' ? 'selected' : '' ?>>Peoneta</option>
-                        </select>
-                    </div>
-                    <div class="field-item">
-                        <select name="rol" required>
-                            <option value="">Seleccionar</option>
-                            <option value="admin" <?= ($monto['rol'] ?? 'basico') === 'admin' ? 'selected' : '' ?>>admin</option>
-                            <option value="basico" <?= ($monto['rol'] ?? 'basico') === 'basico' ? 'selected' : '' ?>>básico</option>
                         </select>
                     </div>
                     <div class="field-item">
@@ -160,7 +147,6 @@ if (isset($_GET['edit'])) {
                             <th>Vehículo</th>
                             <th>Tipo Monto</th>
                             <th>Tipo Personal</th>
-                            <th>Rol</th>
                             <th>Monto</th>
                             <th>Acción</th>
                         </tr>
@@ -179,7 +165,6 @@ if (isset($_GET['edit'])) {
 
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
-        // Notificaciones
         function mostrarNotificacion(mensaje, tipo = 'info') {
             const toast = document.getElementById('toast');
             const messageEl = document.getElementById('toast-message');
@@ -207,8 +192,6 @@ if (isset($_GET['edit'])) {
         window.exito = (msg) => mostrarNotificacion(msg, 'success');
         window.error = (msg) => mostrarNotificacion(msg, 'error');
 
-        let vehiculoSeleccionado = null;
-
         // Cargar tabla de montos
         async function cargarTablaMontos() {
             try {
@@ -220,7 +203,6 @@ if (isset($_GET['edit'])) {
                         <td>${m.nombre_vehiculo || '-'}</td>
                         <td>${m.tipo_monto}</td>
                         <td>${m.tipo_personal}</td>
-                        <td>${m.rol}</td>
                         <td>$${parseFloat(m.monto).toLocaleString()}</td>
                         <td>
                             <a href="?edit=${m.id_monto}" class="btn-edit">
@@ -238,7 +220,7 @@ if (isset($_GET['edit'])) {
             }
         }
 
-        // Búsqueda inteligente
+        // Búsqueda inteligente - ahora busca montos, no vehículos
         let busquedaTimeout;
         document.getElementById('busquedaVehiculo').addEventListener('input', function() {
             const term = this.value.trim();
@@ -250,26 +232,32 @@ if (isset($_GET['edit'])) {
 
             clearTimeout(busquedaTimeout);
             busquedaTimeout = setTimeout(() => {
-                fetch(`../api/get_vehiculos_busqueda.php?q=${encodeURIComponent(term)}`)
+                // Buscar en la API de montos directamente
+                fetch(`../api/get_monto_busqueda.php?q=${encodeURIComponent(term)}`)
                     .then(r => r.json())
-                    .then(vehiculos => {
+                    .then(montos => {
                         div.innerHTML = '';
-                        if (vehiculos.length === 0) {
+                        if (montos.length === 0) {
                             div.innerHTML = '<div style="padding:8px;color:#999;">Sin resultados</div>';
                         } else {
-                            const unicos = vehiculos.filter((v, i, a) => 
-                                i === a.findIndex(v2 => v2.id_vehiculo === v.id_vehiculo)
-                            );
-                            unicos.forEach(v => {
+                            montos.forEach(m => {
                                 const el = document.createElement('div');
                                 el.style.padding = '8px';
                                 el.style.cursor = 'pointer';
                                 el.style.borderBottom = '1px solid #eee';
-                                el.textContent = `${v.patente} - ${v.marca} ${v.modelo} (${v.nombre_vehiculo})`;
+                                // Mostrar: nombre_vehiculo, tipo_monto, tipo_personal, monto
+                                el.textContent = `${m.nombre_vehiculo} | ${m.tipo_monto} | ${m.tipo_personal} | $${parseFloat(m.monto).toLocaleString()}`;
                                 el.addEventListener('click', () => {
-                                    vehiculoSeleccionado = v;
-                                    document.getElementById('id_vehiculo').value = v.id_vehiculo;
-                                    document.getElementById('nombre_vehiculo_display').value = v.nombre_vehiculo;
+                                    // Cargar todos los campos del monto seleccionado
+                                    document.getElementById('id_monto').value = m.id_monto;
+                                    document.getElementById('id_vehiculo').value = m.id_vehiculo || '';
+                                    document.getElementById('nombre_vehiculo_display').value = m.nombre_vehiculo || '';
+                                    
+                                    // Actualizar selects
+                                    document.querySelector('select[name="tipo_monto"]').value = m.tipo_monto || '';
+                                    document.querySelector('select[name="tipo_personal"]').value = m.tipo_personal || '';
+                                    document.querySelector('input[name="monto"]').value = m.monto || '';
+                                    
                                     div.style.display = 'none';
                                 });
                                 div.appendChild(el);
@@ -303,7 +291,6 @@ if (isset($_GET['edit'])) {
                 switch(msg) {
                     case 'success': text = "✅ Monto guardado exitosamente"; type = "success"; break;
                     case 'delete_success': text = "🗑️ Monto eliminado"; type = "success"; break;
-                    case 'error_vehiculo': text = "⚠️ Debe seleccionar un vehículo"; type = "error"; break;
                     case 'error': text = "❌ Error al guardar"; type = "error"; break;
                 }
                 if (text) mostrarNotificacion(text, type);

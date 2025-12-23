@@ -8,25 +8,31 @@ require '../config.php';
 
 $pdo = getDBConnection();
 
-// Eliminar
+// Eliminar registro
 if (isset($_GET['delete'])) {
-    $pdo->prepare("DELETE FROM MONTO WHERE id_monto = ?")->execute([(int)$_GET['delete']]);
-    header("Location: /pages/monto_view.php?msg=delete_success");
-    exit;
+    try {
+        $pdo->prepare("DELETE FROM MONTO WHERE id_monto = ?")->execute([(int)$_GET['delete']]);
+        header("Location: /pages/monto_view.php?msg=delete_success");
+        exit;
+    } catch (Exception $e) {
+        error_log("Error al eliminar monto: " . $e->getMessage());
+        header("Location: /pages/monto_view.php?msg=error");
+        exit;
+    }
 }
 
 // Guardar o actualizar
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = $_POST['id_monto'] ?? null;
-    $tipo_monto = $_POST['tipo_monto'] ?? '';
-    $tipo_personal = $_POST['tipo_personal'] ?? '';
-    $monto = (int)($_POST['monto'] ?? 0);
     $id_vehiculo = (int)($_POST['id_vehiculo'] ?? 0);
     $nombre_vehiculo = trim($_POST['nombre_vehiculo'] ?? '');
+    $tipo_monto = $_POST['tipo_monto'] ?? '';
+    $tipo_personal = $_POST['tipo_personal'] ?? '';
+    $monto = (float)($_POST['monto'] ?? 0);
 
-    // Validar selección de vehículo
-    if (!$id_vehiculo || !$nombre_vehiculo) {
-        header("Location: /pages/monto_view.php?msg=error_vehiculo");
+    // Validaciones
+    if (!$nombre_vehiculo || !$tipo_monto || !$tipo_personal || !$monto) {
+        header("Location: /pages/monto_view.php?msg=error");
         exit;
     }
 
