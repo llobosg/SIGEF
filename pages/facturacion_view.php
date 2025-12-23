@@ -96,65 +96,49 @@ if (isset($_GET['edit'])) {
             "></div>
         </div>
 
-        <!-- Formulario de Facturación -->
-        <div class="card">
-            <h3><i class="fas fa-receipt"></i> Ficha de Facturación</h3>
-            <form method="POST" action="facturacion_logic.php">
-                <input type="hidden" name="id_factura" value="<?= $factura['id_factura'] ?? '' ?>">
-                <input type="hidden" name="id_vehiculo" id="id_vehiculo" value="<?= $factura['id_vehiculo'] ?? '' ?>">
-                <input type="hidden" name="monto_base" id="monto_base" value="<?= $factura['monto'] ?? '' ?>">
-
-                <div class="formulario-facturacion-grid">
-                    <!-- Fila 1: Labels -->
-                    <div class="label-item">N° Factura</div>
-                    <div class="label-item">Nombre Vehículo</div>
-                    <div class="label-item">Tipo Monto</div>
-                    <div class="label-item">Cantidad</div>
-                    <div class="label-item">Monto Total</div>
-                    
-                    <!-- Fila 2: Campos -->
-                    <div class="field-item">
-                        <input type="text" name="nro_factura" 
-                               value="<?= htmlspecialchars($factura['nro_factura'] ?? '') ?>" 
-                               required <?= $esEdicion ? '' : 'readonly' ?>>
-                    </div>
-                    <div class="field-item">
-                        <input type="text" name="nombre_vehiculo" id="nombre_vehiculo_display"
-                               value="<?= htmlspecialchars($factura['nombre_vehiculo'] ?? '') ?>" 
-                               readonly required>
-                    </div>
-                    <div class="field-item">
-                        <input type="text" name="tipo_monto" id="tipo_monto_display"
-                               value="<?= htmlspecialchars($factura['tipo_monto'] ?? '') ?>" 
-                               readonly required>
-                    </div>
-                    <div class="field-item">
-                        <input type="number" name="qty_tipo_monto" id="qty_tipo_monto" 
-                               value="<?= $factura['qty_tipo_monto'] ?? '' ?>" 
-                               min="1" required <?= $esEdicion ? '' : 'readonly' ?>
-                               onchange="calcularMontoTotal()">
-                    </div>
-                    <div class="field-item">
-                        <input type="number" name="monto" id="monto_total" 
-                               value="<?= $factura['monto'] ?? '' ?>" 
-                               readonly required>
-                    </div>
-                </div>
-
-                <!-- Fecha (solo en edición o después de búsqueda) -->
-                <div style="margin-top: 1rem;">
-                    <label>Fecha *</label>
-                    <input type="date" name="fecha" value="<?= $factura['fecha'] ?? date('Y-m-d') ?>" 
-                           required <?= $esEdicion ? '' : 'readonly' ?>>
-                </div>
-
-                <div class="action-buttons" style="margin-top: 1.5rem;">
-                    <button type="submit" class="btn-primary">
-                        <i class="fas fa-save"></i> Guardar Facturación
-                    </button>
-                </div>
-            </form>
+        <!-- Formulario Facturación -->
+        <div class="formulario-facturacion-grid">
+        <!-- Fila 1: Labels -->
+        <div class="label-item">N° Factura</div>
+        <div class="label-item">Nombre Vehículo</div>
+        <div class="label-item">Tipo Monto</div>
+        <div class="label-item">Monto x Vehíc</div>
+        <div class="label-item">Cantidad</div>
+        <div class="label-item">Monto x Factura</div>
+        
+        <!-- Fila 2: Campos -->
+        <div class="field-item">
+            <input type="text" name="nro_factura" 
+                value="<?= htmlspecialchars($factura['nro_factura'] ?? '') ?>" 
+                required <?= $esEdicion ? '' : 'readonly' ?>>
         </div>
+        <div class="field-item">
+            <input type="text" name="nombre_vehiculo" id="nombre_vehiculo_display"
+                value="<?= htmlspecialchars($factura['nombre_vehiculo'] ?? '') ?>" 
+                readonly required>
+        </div>
+        <div class="field-item">
+            <input type="text" name="tipo_monto" id="tipo_monto_display"
+                value="<?= htmlspecialchars($factura['tipo_monto'] ?? '') ?>" 
+                readonly required>
+        </div>
+        <div class="field-item">
+            <input type="number" name="monto_m" id="monto_m_display"
+                value="<?= $factura['monto_m'] ?? '' ?>" 
+                readonly required step="0.01">
+        </div>
+        <div class="field-item">
+            <input type="number" name="qty_tipo_monto" id="qty_tipo_monto" 
+                value="<?= $factura['qty_tipo_monto'] ?? '' ?>" 
+                min="1" required <?= $esEdicion ? '' : 'readonly' ?>
+                onchange="calcularMontoTotal()">
+        </div>
+        <div class="field-item">
+            <input type="number" name="monto" id="monto_total" 
+                value="<?= $factura['monto'] ?? '' ?>" 
+                readonly required step="0.01">
+        </div>
+    </div>
 
         <!-- Tabla de facturaciones históricas -->
         <div class="card">
@@ -167,8 +151,9 @@ if (isset($_GET['edit'])) {
                             <th>Fecha</th>
                             <th>Vehículo</th>
                             <th>Tipo Monto</th>
+                            <th>Monto x Vehíc</th>
                             <th>Cantidad</th>
-                            <th>Monto</th>
+                            <th>Monto x Factura</th>
                             <th>Acción</th>
                         </tr>
                     </thead>
@@ -217,8 +202,8 @@ if (isset($_GET['edit'])) {
         // Calcular monto total
         function calcularMontoTotal() {
             const qty = parseFloat(document.getElementById('qty_tipo_monto').value) || 0;
-            const montoBase = parseFloat(document.getElementById('monto_base').value) || 0;
-            const total = qty * montoBase;
+            const montoM = parseFloat(document.getElementById('monto_m_display').value) || 0;
+            const total = qty * montoM;
             document.getElementById('monto_total').value = total.toFixed(2);
         }
 
@@ -234,6 +219,7 @@ if (isset($_GET['edit'])) {
                         <td>${f.fecha || '-'}</td>
                         <td>${f.nombre_vehiculo || '-'}</td>
                         <td>${f.tipo_monto || '-'}</td>
+                        <td>$${parseFloat(f.monto_m).toLocaleString()}</td>
                         <td>${f.qty_tipo_monto || '-'}</td>
                         <td>$${parseFloat(f.monto).toLocaleString()}</td>
                         <td>
@@ -279,11 +265,11 @@ if (isset($_GET['edit'])) {
                                 el.style.borderBottom = '1px solid #eee';
                                 el.textContent = `${m.nombre_vehiculo} | ${m.tipo_monto} | ${m.tipo_personal} | $${parseFloat(m.monto).toLocaleString()}`;
                                 el.addEventListener('click', () => {
-                                    // Solo en modo creación
                                     if (<?= $esEdicion ? 'false' : 'true' ?>) {
                                         document.getElementById('id_vehiculo').value = m.id_vehiculo || '';
                                         document.getElementById('nombre_vehiculo_display').value = m.nombre_vehiculo || '';
                                         document.getElementById('tipo_monto_display').value = m.tipo_monto || '';
+                                        document.getElementById('monto_m_display').value = m.monto || 0; // ← Nuevo campo
                                         document.getElementById('monto_base').value = m.monto || 0;
                                         document.getElementById('qty_tipo_monto').readOnly = false;
                                         document.getElementById('qty_tipo_monto').value = '';

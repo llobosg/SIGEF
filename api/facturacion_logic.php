@@ -31,17 +31,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre_vehiculo = trim($_POST['nombre_vehiculo'] ?? '');
     $fecha = $_POST['fecha'] ?? '';
     $tipo_monto = $_POST['tipo_monto'] ?? '';
+    $monto_m = (float)($_POST['monto_m'] ?? 0); // ← Nuevo campo
     $qty_tipo_monto = (int)($_POST['qty_tipo_monto'] ?? 0);
     $monto = (float)($_POST['monto'] ?? 0);
 
     // Validaciones
-    if (!$nro_factura || !$id_vehiculo || !$nombre_vehiculo || !$fecha || !$tipo_monto || !$qty_tipo_monto || !$monto) {
+    if (!$nro_factura || !$id_vehiculo || !$nombre_vehiculo || !$fecha || !$tipo_monto || !$monto_m || !$qty_tipo_monto || !$monto) {
         header("Location: /pages/facturacion_view.php?msg=error");
         exit;
     }
 
-    // Calcular llave_mes (YYYYMM)
+    // Calcular llave_mes
     $llave_mes = date('Ym', strtotime($fecha));
+
+    if ($id) {
+        // Actualizar
+        $pdo->prepare("UPDATE FACTURACION SET 
+            nro_factura = ?, id_vehiculo = ?, nombre_vehiculo = ?, 
+            fecha = ?, tipo_monto = ?, monto_m = ?, qty_tipo_monto = ?, monto = ?, llave_mes = ?
+            WHERE id_factura = ?")
+            ->execute([$nro_factura, $id_vehiculo, $nombre_vehiculo, $fecha, $tipo_monto, $monto_m, $qty_tipo_monto, $monto, $llave_mes, $id]);
+    } else {
+        // Insertar
+        $pdo->prepare("INSERT INTO FACTURACION (
+            nro_factura, id_vehiculo, nombre_vehiculo, fecha, tipo_monto, monto_m, qty_tipo_monto, monto, llave_mes
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+            ->execute([$nro_factura, $id_vehiculo, $nombre_vehiculo, $fecha, $tipo_monto, $monto_m, $qty_tipo_monto, $monto, $llave_mes]);
+    }
 
     try {
         if ($id) {
