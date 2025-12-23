@@ -209,6 +209,7 @@ if (isset($_GET['edit'])) {
                 setTimeout(() => toast.style.display = 'none', 400);
             }, 4000);
         }
+        // Notificaciones globales
         window.exito = (msg) => mostrarNotificacion(msg, 'success');
         window.error = (msg) => mostrarNotificacion(msg, 'error');
 
