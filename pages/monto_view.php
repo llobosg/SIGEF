@@ -30,224 +30,242 @@ if (isset($_GET['edit'])) {
             <h2><i class="fas fa-money-bill-wave"></i> Configuración de Montos</h2>
         </div>
 
+        <!-- Búsqueda inteligente -->
+        <div style="height: 4rem;"></div>
+        <div style="margin: 1rem 0; position: relative;">
+            <label><i class="fas fa-search"></i> Búsqueda Inteligente</label>
+            <input type="text" id="busquedaVehiculo" placeholder="Buscar por patente, marca, modelo o nombre del vehículo..." style="width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 6px;" />
+            <div id="resultadosBusqueda" style="
+                position: absolute;
+                top: 100%;
+                left: 0;
+                background: white;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                max-height: 300px;
+                overflow-y: auto;
+                width: 100%;
+                z-index: 1000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                display: none;
+            "></div>
+        </div>
+
+        <!-- Formulario de Montos -->
         <div class="card">
+            <h3><i class="fas fa-file-invoice-dollar"></i> Ficha de Montos</h3>
             <form method="POST" action="monto_logic.php">
                 <input type="hidden" name="id_monto" value="<?= $monto['id_monto'] ?? '' ?>">
                 <input type="hidden" name="id_vehiculo" id="id_vehiculo" value="<?= $monto['id_vehiculo'] ?? '' ?>">
-                <input type="hidden" name="nombre_vehiculo" id="nombre_vehiculo_display" value="<?= htmlspecialchars($monto['nombre_vehiculo'] ?? '') ?>">
 
-                <div class="form-grid-4">
-                    <label>Tipo Monto</label>
-                    <label>Tipo Personal</label>
-                    <label>Monto ($)</label>
-                    <label></label>
-
-                    <select name="tipo_monto" required>
-                        <option value="">Seleccionar</option>
-                        <option value="Guía" <?= ($monto['tipo_monto'] ?? '') === 'Guía' ? 'selected' : '' ?>>Guía</option>
-                        <option value="Distancia" <?= ($monto['tipo_monto'] ?? '') === 'Distancia' ? 'selected' : '' ?>>Distancia</option>
-                        <option value="día" <?= ($monto['tipo_monto'] ?? '') === 'día' ? 'selected' : '' ?>>Día</option>
-                    </select>
-                    <select name="tipo_personal" required>
-                        <option value="">Seleccionar</option>
-                        <option value="Chofer" <?= ($monto['tipo_personal'] ?? '') === 'Chofer' ? 'selected' : '' ?>>Chofer</option>
-                        <option value="Peoneta" <?= ($monto['tipo_personal'] ?? '') === 'Peoneta' ? 'selected' : '' ?>>Peoneta</option>
-                    </select>
-                    <input type="number" name="monto" value="<?= $monto['monto'] ?? '' ?>" required min="0">
-                    <div></div>
+                <div class="grid-form">
+                    <div class="form-group">
+                        <label>Nombre Vehículo *</label>
+                        <input type="text" id="nombre_vehiculo_display" name="nombre_vehiculo" 
+                               value="<?= htmlspecialchars($monto['nombre_vehiculo'] ?? '') ?>" 
+                               readonly required
+                               style="background: #f8f9fa;">
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo Monto *</label>
+                        <select name="tipo_monto" required>
+                            <option value="">Seleccionar</option>
+                            <option value="Guía" <?= ($monto['tipo_monto'] ?? '') === 'Guía' ? 'selected' : '' ?>>Guía</option>
+                            <option value="Distancia" <?= ($monto['tipo_monto'] ?? '') === 'Distancia' ? 'selected' : '' ?>>Distancia</option>
+                            <option value="día" <?= ($monto['tipo_monto'] ?? '') === 'día' ? 'selected' : '' ?>>Día</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo Personal *</label>
+                        <select name="tipo_personal" required>
+                            <option value="">Seleccionar</option>
+                            <option value="Chofer" <?= ($monto['tipo_personal'] ?? '') === 'Chofer' ? 'selected' : '' ?>>Chofer</option>
+                            <option value="Peoneta" <?= ($monto['tipo_personal'] ?? '') === 'Peoneta' ? 'selected' : '' ?>>Peoneta</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Rol *</label>
+                        <select name="rol" required>
+                            <option value="">Seleccionar</option>
+                            <option value="admin" <?= ($monto['rol'] ?? 'basico') === 'admin' ? 'selected' : '' ?>>admin</option>
+                            <option value="basico" <?= ($monto['rol'] ?? 'basico') === 'basico' ? 'selected' : '' ?>>básico</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Monto ($)*</label>
+                        <input type="number" name="monto" value="<?= $monto['monto'] ?? '' ?>" required min="0" step="0.01">
+                    </div>
                 </div>
 
-                <div class="form-actions">
-                    <button type="submit" class="btn-save">
+                <div class="action-buttons" style="margin-top: 1.5rem;">
+                    <button type="submit" class="btn-primary">
                         <i class="fas fa-save"></i> Guardar
                     </button>
                 </div>
             </form>
         </div>
 
-        <!-- Tabla de montos -->
+        <!-- Tabla de todos los montos -->
         <div class="card">
-            <h3>Montos Configurados</h3>
-            <table class="data-table" id="tablaMontos">
-                <thead>
-                    <tr>
-                        <th>Vehículo</th><th>Tipo Monto</th><th>Tipo Personal</th><th>Monto</th><th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+            <h3><i class="fas fa-list"></i> Registro de Montos</h3>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Vehículo</th>
+                            <th>Tipo Monto</th>
+                            <th>Tipo Personal</th>
+                            <th>Rol</th>
+                            <th>Monto</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaMontos"></tbody>
+                </table>
+            </div>
         </div>
+    </div>
+
+    <!-- Toast de notificaciones -->
+    <div id="toast" class="toast" style="display:none;">
+        <i class="fas fa-info-circle"></i> 
+        <span id="toast-message">Mensaje</span>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
-        // Búsqueda de vehículos
-        let busquedaTimeout;
-        document.getElementById('busquedaVehiculo').addEventListener('input', function() {
-            const term = this.value.trim();
-            const sugerencias = document.getElementById('sugerencias');
-            sugerencias.innerHTML = '';
-
-            clearTimeout(busquedaTimeout);
-            if (term.length < 2) return;
-
-            busquedaTimeout = setTimeout(() => {
-                fetch(`../api/get_vehiculos_busqueda.php?q=${encodeURIComponent(term)}`)
-                    .then(r => r.json())
-                    .then(vehiculos => {
-                        sugerencias.innerHTML = vehiculos.map(v => `
-                            <div onclick="seleccionarVehiculo(${v.id_vehiculo}, '${v.nombre_vehiculo.replace(/'/g, "\\'")}')">
-                                ${v.patente} - ${v.marca} ${v.modelo} (${v.nombre_vehiculo})
-                            </div>
-                        `).join('');
-                    });
-            }, 300);
-        });
-
-        function seleccionarVehiculo(id, nombre) {
-            document.getElementById('id_vehiculo').value = id;
-            document.getElementById('nombre_vehiculo_display').value = nombre;
-            document.getElementById('busquedaVehiculo').value = nombre;
-            document.getElementById('sugerencias').innerHTML = '';
+        // Notificaciones
+        function mostrarNotificacion(mensaje, tipo = 'info') {
+            const toast = document.getElementById('toast');
+            const messageEl = document.getElementById('toast-message');
+            const iconEl = toast.querySelector('i');
+            
+            messageEl.textContent = mensaje;
+            toast.className = 'toast';
+            
+            let iconClass = 'fa-info-circle';
+            switch(tipo) {
+                case 'success': iconClass = 'fa-check-circle'; toast.classList.add('success'); break;
+                case 'error': iconClass = 'fa-times-circle'; toast.classList.add('error'); break;
+                case 'warning': iconClass = 'fa-exclamation-triangle'; toast.classList.add('warning'); break;
+                default: toast.classList.add('info');
+            }
+            iconEl.className = `fas ${iconClass}`;
+            
+            toast.style.display = 'flex';
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.style.display = 'none', 400);
+            }, 4000);
         }
+        window.exito = (msg) => mostrarNotificacion(msg, 'success');
+        window.error = (msg) => mostrarNotificacion(msg, 'error');
 
-        // Cargar tabla
-        fetch('../api/get_monto.php')
-            .then(r => r.json())
-            .then(data => {
-                const tbody = document.querySelector('#tablaMontos tbody');
+        let vehiculoSeleccionado = null;
+
+        // Cargar tabla de montos
+        async function cargarTablaMontos() {
+            try {
+                const res = await fetch('../api/get_monto.php');
+                const data = await res.json();
+                const tbody = document.getElementById('tablaMontos');
                 tbody.innerHTML = data.map(m => `
                     <tr>
                         <td>${m.nombre_vehiculo || '-'}</td>
                         <td>${m.tipo_monto}</td>
                         <td>${m.tipo_personal}</td>
-                        <td>$${m.monto}</td>
+                        <td>${m.rol}</td>
+                        <td>$${parseFloat(m.monto).toLocaleString()}</td>
                         <td>
-                            <a href="?edit=${m.id_monto}">Editar</a>
-                            <a href="monto_logic.php?delete=${m.id_monto}" onclick="return confirm('¿Eliminar?')">Eliminar</a>
+                            <a href="?edit=${m.id_monto}" class="btn-edit">
+                                <i class="fas fa-pencil-alt"></i>
+                            </a>
+                            <a href="monto_logic.php?delete=${m.id_monto}" class="btn-delete" 
+                               onclick="return confirm('¿Eliminar?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
                         </td>
                     </tr>
                 `).join('');
-            });
+            } catch (err) {
+                console.error('Error al cargar montos:', err);
+            }
+        }
 
-        // Notificaciones
-        (function() {
+        // Búsqueda inteligente
+        let busquedaTimeout;
+        document.getElementById('busquedaVehiculo').addEventListener('input', function() {
+            const term = this.value.trim();
+            const div = document.getElementById('resultadosBusqueda');
+            div.innerHTML = '';
+            div.style.display = 'none';
+
+            if (term.length < 2) return;
+
+            clearTimeout(busquedaTimeout);
+            busquedaTimeout = setTimeout(() => {
+                fetch(`../api/get_vehiculos_busqueda.php?q=${encodeURIComponent(term)}`)
+                    .then(r => r.json())
+                    .then(vehiculos => {
+                        div.innerHTML = '';
+                        if (vehiculos.length === 0) {
+                            div.innerHTML = '<div style="padding:8px;color:#999;">Sin resultados</div>';
+                        } else {
+                            // Eliminar duplicados
+                            const unicos = vehiculos.filter((v, i, a) => 
+                                i === a.findIndex(v2 => v2.id_vehiculo === v.id_vehiculo)
+                            );
+                            unicos.forEach(v => {
+                                const el = document.createElement('div');
+                                el.style.padding = '8px';
+                                el.style.cursor = 'pointer';
+                                el.style.borderBottom = '1px solid #eee';
+                                el.textContent = `${v.patente} - ${v.marca} ${v.modelo} (${v.nombre_vehiculo})`;
+                                el.addEventListener('click', () => {
+                                    vehiculoSeleccionado = v;
+                                    document.getElementById('id_vehiculo').value = v.id_vehiculo;
+                                    document.getElementById('nombre_vehiculo_display').value = v.nombre_vehiculo;
+                                    div.style.display = 'none';
+                                });
+                                div.appendChild(el);
+                            });
+                        }
+                        div.style.display = 'block';
+                    })
+                    .catch(err => {
+                        error('Error en búsqueda');
+                    });
+            }, 300);
+        });
+
+        // Cerrar resultados al hacer clic fuera
+        document.addEventListener('click', (e) => {
+            const input = document.getElementById('busquedaVehiculo');
+            const div = document.getElementById('resultadosBusqueda');
+            if (!input.contains(e.target) && !div.contains(e.target)) {
+                div.style.display = 'none';
+            }
+        });
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarTablaMontos();
+            
+            // Mostrar notificaciones desde URL
             const params = new URLSearchParams(window.location.search);
             const msg = params.get('msg');
-            if (!msg) return;
-            let text = "", bg = "#27ae60";
-            switch(msg) {
-                case 'success': text = "✅ Monto guardado"; break;
-                case 'delete_success': text = "🗑️ Monto eliminado"; break;
-                case 'error': text = "⚠️ Error al guardar"; bg = "#e74c3c"; break;
-                case 'error_vehiculo': text = "⚠️ Debe seleccionar un vehículo"; bg = "#e74c3c"; break;
-                default: return;
+            if (msg) {
+                let text = "", type = "info";
+                switch(msg) {
+                    case 'success': text = "✅ Monto guardado exitosamente"; type = "success"; break;
+                    case 'delete_success': text = "🗑️ Monto eliminado"; type = "success"; break;
+                    case 'error_vehiculo': text = "⚠️ Debe seleccionar un vehículo"; type = "error"; break;
+                    case 'error': text = "❌ Error al guardar"; type = "error"; break;
+                }
+                if (text) mostrarNotificacion(text, type);
             }
-            Toastify({text,duration:3000,gravity:"top",position:"right",backgroundColor:bg}).showToast();
-            history.replaceState({}, '', location.pathname);
-        })();
+        });
     </script>
-
-    <style>
-        .page-title h2 {
-            font-size: 1.6rem;
-            color: var(--dark);
-            margin-bottom: 1.2rem;
-        }
-
-        .form-grid-4 {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 0.8rem;
-            margin-bottom: 1.2rem;
-        }
-
-        .form-grid-4 label {
-            text-align: center;
-            font-weight: normal;
-            color: var(--dark);
-            margin-bottom: 0.3rem;
-        }
-
-        .form-grid-4 input,
-        .form-grid-4 select {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            font-size: 0.95rem;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 0.8rem;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .form-row label {
-            font-weight: normal;
-            color: var(--dark);
-            min-width: 120px;
-        }
-
-        .sugerencias {
-            position: absolute;
-            background: white;
-            border: 1px solid #ddd;
-            border-top: none;
-            z-index: 1000;
-            max-height: 200px;
-            overflow-y: auto;
-            width: 100%;
-            margin-top: -1px;
-        }
-        .sugerencias div {
-            padding: 0.5rem;
-            cursor: pointer;
-        }
-        .sugerencias div:hover {
-            background: #f0f0f0;
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .form-actions .btn-save {
-            background: var(--secondary);
-            color: white;
-            border: none;
-            padding: 0.5rem 1.2rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-
-        .form-actions .btn-save:hover {
-            background: var(--secondary-hover);
-        }
-
-        @media (max-width: 768px) {
-            .form-grid-4 {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .form-grid-4 label {
-                grid-column: span 2;
-                text-align: left;
-            }
-            .form-row {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .form-row label {
-                margin-bottom: 0.3rem;
-            }
-        }
-    </style>
 </body>
 </html>
