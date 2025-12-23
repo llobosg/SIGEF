@@ -20,13 +20,28 @@ if ($_SESSION['rol'] !== 'admin') {
             <h2><i class="fas fa-wrench"></i> Gastos de Flota</h2>
         </div>
 
-        <!-- BÚSQUEDA INTELIGENTE -->
-        <div class="fas fa-search">Búsqueda inteligente</div>
-        <input type="text" id="busquedaVehiculo" 
-               placeholder="Buscar por patente, marca, modelo o nombre del vehículo..."
-               style="width: 100%; padding: 0.6rem; margin: 0.5rem 0 1.5rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9rem;">
-        <div id="resultadosBusqueda" 
-             style="position: absolute; background: white; border: 1px solid #ccc; width: 100%; max-height: 200px; overflow-y: auto; display: none; z-index: 1000;"></div>
+        <!-- Búsqueda inteligente -->
+        <div style="height: 4rem;"></div>
+        <!-- Contenedor padre del input y resultados -->
+        <div style="margin: 1rem 0; position: relative;"> <!-- Añadido position: relative al contenedor padre -->
+            <label><i class="fas fa-search"></i> Búsqueda Inteligente</label>
+            <!-- El input ocupa el 100% del ancho disponible (hereda del contenedor padre) -->
+            <input type="text" id="busquedaVehiculo" placeholder="Buscar por patente, marca, modelo o nombre del vehículo..." style="width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 6px;" />
+            <div id="resultados-busqueda" style="
+                position: absolute;
+                top: 100%; /* Colocar justo debajo del input */
+                left: 0;   /* Alinear a la izquierda del contenedor padre */
+                background: white;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                max-height: 300px;
+                overflow-y: auto;
+                width: 100%; /* ✅ Ancho 100% del contenedor padre (ajustado por padding/border si es necesario) */
+                z-index: 1000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                display: none;
+            "></div>
+        </div>
 
         <!-- DATOS DEL VEHÍCULO -->
         <div class="card">
