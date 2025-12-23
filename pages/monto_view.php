@@ -36,30 +36,6 @@ if (isset($_GET['edit'])) {
                 <input type="hidden" name="id_vehiculo" id="id_vehiculo" value="<?= $monto['id_vehiculo'] ?? '' ?>">
                 <input type="hidden" name="nombre_vehiculo" id="nombre_vehiculo_display" value="<?= htmlspecialchars($monto['nombre_vehiculo'] ?? '') ?>">
 
-                <!-- Búsqueda inteligente -->
-                <div style="height: 4rem;"></div>
-                <!-- Contenedor padre del input y resultados -->
-                <div style="margin: 1rem 0; position: relative;"> <!-- Añadido position: relative al contenedor padre -->
-                    <label><i class="fas fa-search"></i> Búsqueda Inteligente</label>
-                    <!-- El input ocupa el 100% del ancho disponible (hereda del contenedor padre) -->
-                    <input type="text" id="busquedaVehiculo" placeholder="Buscar por patente, marca, modelo o nombre del vehículo..." style="width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 6px;" />
-                    <div id="sugerencias" class="sugerencias"></div>
-                    <div id="resultadosBusqueda" style="
-                        position: absolute;
-                        top: 100%; /* Colocar justo debajo del input */
-                        left: 0;   /* Alinear a la izquierda del contenedor padre */
-                        background: white;
-                        border: 1px solid #ddd;
-                        border-radius: 8px;
-                        max-height: 300px;
-                        overflow-y: auto;
-                        width: 100%; /* ✅ Ancho 100% del contenedor padre (ajustado por padding/border si es necesario) */
-                        z-index: 1000;
-                        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                        display: none;
-                    "></div>
-                </div>
-
                 <div class="form-grid-4">
                     <label>Tipo Monto</label>
                     <label>Tipo Personal</label>
