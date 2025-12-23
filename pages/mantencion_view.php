@@ -90,7 +90,7 @@ if ($_SESSION['rol'] !== 'admin') {
 
         <!-- HISTORIAL DE MANTENCIONES -->
         <div class="card">
-            <h3><i class="fas fa-history"></i> Historial de Gastos</h3>
+            <h3><i class="fas fa-history"></i> Historial Gastos</h3>
             <div class="table-container">
                 <table class="data-table">
                     <thead>
