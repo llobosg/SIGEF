@@ -44,6 +44,7 @@ if (isset($_GET['edit'])) {
                         <option value="">Seleccionar</option>
                         <option value="Chofer" <?= ($persona['tipo_personal'] ?? '') === 'Chofer' ? 'selected' : '' ?>>Chofer</option>
                         <option value="Peoneta" <?= ($persona['tipo_personal'] ?? '') === 'Peoneta' ? 'selected' : '' ?>>Peoneta</option>
+                        <option value="Admin" <?= ($persona['tipo_personal'] ?? '') === 'Admin' ? 'selected' : '' ?>>Admin</option>
                     </select>
 
                     <!-- Fila 2 -->
