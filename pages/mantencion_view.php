@@ -98,23 +98,34 @@ if ($_SESSION['rol'] !== 'admin') {
     </div>
 
     <!-- SUBMODAL -->
-    <div id="submodalMantencion" class="modal" style="display: none;">
-        <div class="modal-content" style="max-width: 800px;">
-            <span class="close" id="cerrarSubmodal">&times;</span>
-            <h3 id="tituloSubmodal">Registro de Mantenciones / Gastos</h3>
+    <div id="submodalMantencion" 
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                background-color: rgba(0, 0, 0, 0.5); z-index: 10000; 
+                display: none; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 1.4rem; border-radius: 12px; 
+                    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2); 
+                    width: 90%; max-width: 800px; max-height: 90vh; 
+                    overflow-y: auto; position: relative;">
+            <span style="position: absolute; top: 1rem; right: 1.5rem; 
+                        font-size: 1.5rem; font-weight: bold; 
+                        color: #aaa; cursor: pointer;" 
+                id="cerrarSubmodal">&times;</span>
+            <h3 id="tituloSubmodal" style="margin-top: 0; margin-bottom: 1.5rem;">Registro de Mantenciones / Gastos</h3>
             
             <form id="formMantencion">
                 <input type="hidden" id="id_mantencion">
                 <input type="hidden" id="id_vehiculo">
 
                 <!-- Fila 1 -->
-                <div class="form-group-inline">
-                    <label>Fecha *</label>
-                    <input type="date" id="fecha_mant" required>
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; font-size: 0.95rem;">
+                    <label style="flex: 0 0 140px; font-weight: 500; color: #444; text-align: right;">Fecha *</label>
+                    <input type="date" id="fecha_mant" required 
+                        style="flex: 1; padding: 0.6rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9rem; background: white;">
                 </div>
-                <div class="form-group-inline">
-                    <label>Tipo Mantención *</label>
-                    <select id="tipo_mant" required>
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; font-size: 0.95rem;">
+                    <label style="flex: 0 0 140px; font-weight: 500; color: #444; text-align: right;">Tipo Mantención *</label>
+                    <select id="tipo_mant" required 
+                            style="flex: 1; padding: 0.6rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9rem; background: white;">
                         <option value="">Seleccionar</option>
                         <option value="Carga Petróleo">Carga Petróleo</option>
                         <option value="Correctiva">Correctiva</option>
@@ -123,40 +134,41 @@ if ($_SESSION['rol'] !== 'admin') {
                 </div>
 
                 <!-- Fila 2 -->
-                <div class="form-group-inline">
-                    <label>Kilometraje</label>
-                    <input type="number" id="kilometraje" min="0">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; font-size: 0.95rem;">
+                    <label style="flex: 0 0 140px; font-weight: 500; color: #444; text-align: right;">Kilometraje</label>
+                    <input type="number" id="kilometraje" min="0" 
+                        style="flex: 1; padding: 0.6rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9rem; background: white;">
                 </div>
-                <div class="form-group-inline">
-                    <label>Taller</label>
-                    <input type="text" id="taller">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; font-size: 0.95rem;">
+                    <label style="flex: 0 0 140px; font-weight: 500; color: #444; text-align: right;">Taller</label>
+                    <input type="text" id="taller" 
+                        style="flex: 1; padding: 0.6rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9rem; background: white;">
                 </div>
 
                 <!-- Fila 3 -->
-                <div class="form-group-inline">
-                    <label>Reparación</label>
-                    <input type="text" id="reparacion">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; font-size: 0.95rem;">
+                    <label style="flex: 0 0 140px; font-weight: 500; color: #444; text-align: right;">Reparación</label>
+                    <input type="text" id="reparacion" 
+                        style="flex: 1; padding: 0.6rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9rem; background: white;">
                 </div>
-                <div class="form-group-inline">
-                    <label>Notas</label>
-                    <textarea id="notas_mant" rows="2" style="min-height: 60px;"></textarea>
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; font-size: 0.95rem;">
+                    <label style="flex: 0 0 140px; font-weight: 500; color: #444; text-align: right;">Notas</label>
+                    <textarea id="notas_mant" rows="2" 
+                            style="flex: 1; padding: 0.6rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9rem; background: white; min-height: 80px; resize: vertical;"></textarea>
                 </div>
 
                 <!-- Fila 4 -->
-                <div class="form-group-inline">
-                    <label>Costo *</label>
-                    <input type="number" id="costo" required min="0" step="0.01">
-                </div>
-                <div class="form-group-inline" style="visibility: hidden;">
-                    <label></label>
-                    <span></span>
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; font-size: 0.95rem;">
+                    <label style="flex: 0 0 140px; font-weight: 500; color: #444; text-align: right;">Costo *</label>
+                    <input type="number" id="costo" required min="0" step="0.01" 
+                        style="flex: 1; padding: 0.6rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9rem; background: white;">
                 </div>
 
-                <div class="action-buttons" style="margin-top: 1.5rem;">
-                    <button type="submit" class="btn-primary">
+                <div style="margin-top: 1.5rem; display: flex; gap: 1.2rem;">
+                    <button type="submit" class="btn-primary" style="flex: 1;">
                         <i class="fas fa-save"></i> Guardar
                     </button>
-                    <button type="button" id="btnCancelarSubmodal" class="btn-secondary">
+                    <button type="button" id="btnCancelarSubmodal" class="btn-secondary" style="flex: 1;">
                         <i class="fas fa-times"></i> Cancelar
                     </button>
                 </div>
