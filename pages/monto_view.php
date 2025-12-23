@@ -5,12 +5,14 @@ if ($_SESSION['rol'] !== 'admin') {
 }
 
 $monto = null;
+$esEdicion = false;
 if (isset($_GET['edit'])) {
     require '../config.php';
     $pdo = getDBConnection();
     $stmt = $pdo->prepare("SELECT * FROM MONTO WHERE id_monto = ?");
     $stmt->execute([(int)$_GET['edit']]);
     $monto = $stmt->fetch();
+    $esEdicion = true;
 }
 ?>
 <!DOCTYPE html>
@@ -53,6 +55,10 @@ if (isset($_GET['edit'])) {
             border-radius: 6px;
             font-size: 0.9rem;
         }
+        .formulario-montos-grid .field-item input[readonly] {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
         @media (max-width: 768px) {
             .formulario-montos-grid {
                 grid-template-columns: 1fr;
@@ -71,7 +77,7 @@ if (isset($_GET['edit'])) {
         <!-- Búsqueda inteligente -->
         <div style="height: 4rem;"></div>
         <div style="margin: 1rem 0; position: relative;">
-            <label><i class="fas fa-search"></i> Búsqueda Inteligente</label>
+            <label><i class="fas fa-search"></i> Búsqueda de Vehículos</label>
             <input type="text" id="busquedaVehiculo" placeholder="Buscar por patente, marca, modelo o nombre del vehículo..." style="width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 6px;" />
             <div id="resultadosBusqueda" style="
                 position: absolute;
@@ -107,10 +113,10 @@ if (isset($_GET['edit'])) {
                     <div class="field-item">
                         <input type="text" id="nombre_vehiculo_display" name="nombre_vehiculo" 
                                value="<?= htmlspecialchars($monto['nombre_vehiculo'] ?? '') ?>" 
-                               required>
+                               <?= $esEdicion ? '' : 'readonly' ?> required>
                     </div>
                     <div class="field-item">
-                        <select name="tipo_monto" required>
+                        <select name="tipo_monto" required <?= $esEdicion ? '' : 'disabled' ?>>
                             <option value="">Seleccionar</option>
                             <option value="Guía" <?= ($monto['tipo_monto'] ?? '') === 'Guía' ? 'selected' : '' ?>>Guía</option>
                             <option value="Distancia" <?= ($monto['tipo_monto'] ?? '') === 'Distancia' ? 'selected' : '' ?>>Distancia</option>
@@ -118,14 +124,15 @@ if (isset($_GET['edit'])) {
                         </select>
                     </div>
                     <div class="field-item">
-                        <select name="tipo_personal" required>
+                        <select name="tipo_personal" required <?= $esEdicion ? '' : 'disabled' ?>>
                             <option value="">Seleccionar</option>
                             <option value="Chofer" <?= ($monto['tipo_personal'] ?? '') === 'Chofer' ? 'selected' : '' ?>>Chofer</option>
                             <option value="Peoneta" <?= ($monto['tipo_personal'] ?? '') === 'Peoneta' ? 'selected' : '' ?>>Peoneta</option>
                         </select>
                     </div>
                     <div class="field-item">
-                        <input type="number" name="monto" value="<?= $monto['monto'] ?? '' ?>" required min="0" step="0.01">
+                        <input type="number" name="monto" value="<?= $monto['monto'] ?? '' ?>" 
+                               required min="0" step="0.01" <?= $esEdicion ? '' : 'readonly' ?>>
                     </div>
                 </div>
 
@@ -220,7 +227,7 @@ if (isset($_GET['edit'])) {
             }
         }
 
-        // Búsqueda inteligente - ahora busca montos, no vehículos
+        // Búsqueda inteligente (solo vehículos, no montos)
         let busquedaTimeout;
         document.getElementById('busquedaVehiculo').addEventListener('input', function() {
             const term = this.value.trim();
@@ -232,32 +239,34 @@ if (isset($_GET['edit'])) {
 
             clearTimeout(busquedaTimeout);
             busquedaTimeout = setTimeout(() => {
-                // Buscar en la API de montos directamente
-                fetch(`../api/get_monto_busqueda.php?q=${encodeURIComponent(term)}`)
+                fetch(`../api/get_vehiculos_busqueda.php?q=${encodeURIComponent(term)}`)
                     .then(r => r.json())
-                    .then(montos => {
+                    .then(vehiculos => {
                         div.innerHTML = '';
-                        if (montos.length === 0) {
+                        if (vehiculos.length === 0) {
                             div.innerHTML = '<div style="padding:8px;color:#999;">Sin resultados</div>';
                         } else {
-                            montos.forEach(m => {
+                            const unicos = vehiculos.filter((v, i, a) => 
+                                i === a.findIndex(v2 => v2.id_vehiculo === v.id_vehiculo)
+                            );
+                            unicos.forEach(v => {
                                 const el = document.createElement('div');
                                 el.style.padding = '8px';
                                 el.style.cursor = 'pointer';
                                 el.style.borderBottom = '1px solid #eee';
-                                // Mostrar: nombre_vehiculo, tipo_monto, tipo_personal, monto
-                                el.textContent = `${m.nombre_vehiculo} | ${m.tipo_monto} | ${m.tipo_personal} | $${parseFloat(m.monto).toLocaleString()}`;
+                                el.textContent = `${v.patente} - ${v.marca} ${v.modelo} (${v.nombre_vehiculo})`;
                                 el.addEventListener('click', () => {
-                                    // Cargar todos los campos del monto seleccionado
-                                    document.getElementById('id_monto').value = m.id_monto;
-                                    document.getElementById('id_vehiculo').value = m.id_vehiculo || '';
-                                    document.getElementById('nombre_vehiculo_display').value = m.nombre_vehiculo || '';
-                                    
-                                    // Actualizar selects
-                                    document.querySelector('select[name="tipo_monto"]').value = m.tipo_monto || '';
-                                    document.querySelector('select[name="tipo_personal"]').value = m.tipo_personal || '';
-                                    document.querySelector('input[name="monto"]').value = m.monto || '';
-                                    
+                                    // Solo en modo creación (no edición)
+                                    if (<?= $esEdicion ? 'false' : 'true' ?>) {
+                                        document.getElementById('id_vehiculo').value = v.id_vehiculo;
+                                        document.getElementById('nombre_vehiculo_display').value = v.nombre_vehiculo;
+                                        
+                                        // Habilitar campos para edición inmediata
+                                        document.getElementById('nombre_vehiculo_display').readOnly = false;
+                                        document.querySelector('select[name="tipo_monto"]').disabled = false;
+                                        document.querySelector('select[name="tipo_personal"]').disabled = false;
+                                        document.querySelector('input[name="monto"]').readOnly = false;
+                                    }
                                     div.style.display = 'none';
                                 });
                                 div.appendChild(el);
