@@ -98,7 +98,7 @@ if ($_SESSION['rol'] !== 'admin') {
     </div>
 
     <!-- SUBMODAL -->
-    <div id="submodalMantencion" class="modal">
+    <div id="submodalMantencion" class="modal" style="display: none;">
         <div class="modal-content" style="max-width: 800px;">
             <span class="close" id="cerrarSubmodal">&times;</span>
             <h3 id="tituloSubmodal">Registro de Mantenciones / Gastos</h3>
