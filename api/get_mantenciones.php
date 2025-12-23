@@ -13,7 +13,7 @@ $pdo = getDBConnection();
 $stmt = $pdo->prepare("
     SELECT id_mantencion, fecha_mant, nombre_vehiculo, kilometraje, 
            tipo_mant, taller, costo, reparacion, notas_mant
-    FROM mantencion 
+    FROM MANTENCION 
     WHERE id_vehiculo = ?
     ORDER BY fecha_mant DESC
 ");

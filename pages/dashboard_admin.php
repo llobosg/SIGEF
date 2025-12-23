@@ -11,7 +11,7 @@ $pdo = getDBConnection();
 // Totales
 $totalVehiculos = $pdo->query("SELECT COUNT(*) FROM VEHICULO")->fetchColumn();
 $totalPersonal = $pdo->query("SELECT COUNT(*) FROM PERSONAL")->fetchColumn();
-$totalMantenciones = $pdo->query("SELECT COUNT(*) FROM mantencion")->fetchColumn();
+$totalMantenciones = $pdo->query("SELECT COUNT(*) FROM MANTENCION")->fetchColumn();
 
 // Últimas mantenciones
 $stmt = $pdo->prepare("
@@ -34,48 +34,6 @@ $ultimasMantenciones = $stmt->fetchAll();
     <title>Dashboard - SIGEF</title>
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <style>
-        .stats-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.2rem;
-            margin-bottom: 2rem;
-        }
-        .stat-card {
-            background: white;
-            padding: 1.2rem;
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            text-align: center;
-        }
-        .stat-card i {
-            font-size: 2rem;
-            margin-bottom: 0.8rem;
-            color: var(--secondary);
-        }
-        .stat-card .number {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--dark);
-        }
-        .search-section {
-            margin: 1.5rem 0;
-        }
-        .search-section input {
-            width: 100%;
-            padding: 0.6rem;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-        .prospectos-title {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin: 1.5rem 0 1rem;
-            color: var(--dark);
-        }
-    </style>
 </head>
 <body>
     <?php require '../includes/header.php'; ?>

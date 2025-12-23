@@ -47,7 +47,7 @@ try {
 
         if ($id_mantencion) {
             // Actualizar
-            $sql = "UPDATE mantencion SET 
+            $sql = "UPDATE MANTENCION SET 
                         id_vehiculo = ?, nombre_vehiculo = ?, fecha_mant = ?, kilometraje = ?, 
                         tipo_mant = ?, reparacion = ?, taller = ?, notas_mant = ?, costo = ?
                     WHERE id_mantencion = ?";
@@ -58,7 +58,7 @@ try {
             echo json_encode(['success' => true, 'message' => 'Mantención actualizada exitosamente.']);
         } else {
             // Insertar
-            $sql = "INSERT INTO mantencion (
+            $sql = "INSERT INTO MANTENCION (
                 id_vehiculo, nombre_vehiculo, fecha_mant, kilometraje, 
                 tipo_mant, reparacion, taller, notas_mant, costo
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -74,7 +74,7 @@ try {
         if (!$id_mantencion) {
             throw new Exception('ID de mantención no proporcionado.');
         }
-        $pdo->prepare("DELETE FROM mantencion WHERE id_mantencion = ?")->execute([(int)$id_mantencion]);
+        $pdo->prepare("DELETE FROM MANTENCION WHERE id_mantencion = ?")->execute([(int)$id_mantencion]);
         echo json_encode(['success' => true, 'message' => 'Registro eliminado exitosamente.']);
 
     } else {
