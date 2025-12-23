@@ -21,6 +21,49 @@ if (isset($_GET['edit'])) {
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <style>
+        /* Layout tradicional para el formulario de montos */
+        .formulario-montos-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.8rem;
+            margin: 1rem 0;
+        }
+        .formulario-montos-grid .label-item,
+        .formulario-montos-grid .field-item {
+            text-align: center;
+            padding: 0.3rem;
+        }
+        .formulario-montos-grid .label-item {
+            font-weight: 600;
+            color: #444;
+            border-bottom: 2px solid #0066cc;
+            font-size: 0.85rem;
+        }
+        .formulario-montos-grid .field-item {
+            min-height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .formulario-montos-grid .field-item input,
+        .formulario-montos-grid .field-item select {
+            width: 95%;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        .formulario-montos-grid .field-item input[readonly] {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+        @media (max-width: 768px) {
+            .formulario-montos-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
     <?php require '../includes/header.php'; ?>
@@ -58,16 +101,21 @@ if (isset($_GET['edit'])) {
                 <input type="hidden" name="id_monto" value="<?= $monto['id_monto'] ?? '' ?>">
                 <input type="hidden" name="id_vehiculo" id="id_vehiculo" value="<?= $monto['id_vehiculo'] ?? '' ?>">
 
-                <div class="grid-form">
-                    <div class="form-group">
-                        <label>Nombre Vehículo *</label>
+                <div class="formulario-montos-grid">
+                    <!-- Fila 1: Labels -->
+                    <div class="label-item">Nombre Vehículo</div>
+                    <div class="label-item">Tipo Monto</div>
+                    <div class="label-item">Tipo Personal</div>
+                    <div class="label-item">Rol</div>
+                    <div class="label-item">Monto ($)</div>
+                    
+                    <!-- Fila 2: Campos -->
+                    <div class="field-item">
                         <input type="text" id="nombre_vehiculo_display" name="nombre_vehiculo" 
                                value="<?= htmlspecialchars($monto['nombre_vehiculo'] ?? '') ?>" 
-                               readonly required
-                               style="background: #f8f9fa;">
+                               readonly required>
                     </div>
-                    <div class="form-group">
-                        <label>Tipo Monto *</label>
+                    <div class="field-item">
                         <select name="tipo_monto" required>
                             <option value="">Seleccionar</option>
                             <option value="Guía" <?= ($monto['tipo_monto'] ?? '') === 'Guía' ? 'selected' : '' ?>>Guía</option>
@@ -75,24 +123,21 @@ if (isset($_GET['edit'])) {
                             <option value="día" <?= ($monto['tipo_monto'] ?? '') === 'día' ? 'selected' : '' ?>>Día</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label>Tipo Personal *</label>
+                    <div class="field-item">
                         <select name="tipo_personal" required>
                             <option value="">Seleccionar</option>
                             <option value="Chofer" <?= ($monto['tipo_personal'] ?? '') === 'Chofer' ? 'selected' : '' ?>>Chofer</option>
                             <option value="Peoneta" <?= ($monto['tipo_personal'] ?? '') === 'Peoneta' ? 'selected' : '' ?>>Peoneta</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label>Rol *</label>
+                    <div class="field-item">
                         <select name="rol" required>
                             <option value="">Seleccionar</option>
                             <option value="admin" <?= ($monto['rol'] ?? 'basico') === 'admin' ? 'selected' : '' ?>>admin</option>
                             <option value="basico" <?= ($monto['rol'] ?? 'basico') === 'basico' ? 'selected' : '' ?>>básico</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label>Monto ($)*</label>
+                    <div class="field-item">
                         <input type="number" name="monto" value="<?= $monto['monto'] ?? '' ?>" required min="0" step="0.01">
                     </div>
                 </div>
@@ -212,7 +257,6 @@ if (isset($_GET['edit'])) {
                         if (vehiculos.length === 0) {
                             div.innerHTML = '<div style="padding:8px;color:#999;">Sin resultados</div>';
                         } else {
-                            // Eliminar duplicados
                             const unicos = vehiculos.filter((v, i, a) => 
                                 i === a.findIndex(v2 => v2.id_vehiculo === v.id_vehiculo)
                             );
@@ -252,7 +296,6 @@ if (isset($_GET['edit'])) {
         document.addEventListener('DOMContentLoaded', () => {
             cargarTablaMontos();
             
-            // Mostrar notificaciones desde URL
             const params = new URLSearchParams(window.location.search);
             const msg = params.get('msg');
             if (msg) {
