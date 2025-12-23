@@ -1,4 +1,4 @@
-<?php
+?php
 require '../session_check.php';
 if ($_SESSION['rol'] !== 'admin') {
     die('Acceso denegado');
@@ -12,79 +12,13 @@ if ($_SESSION['rol'] !== 'admin') {
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-    <style>
-        .submodal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-        .submodal-content {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 600px;
-            position: relative;
-        }
-        .submodal-close {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 1.4rem;
-            cursor: pointer;
-            color: #999;
-        }
-        .form-group {
-            margin: 1rem 0;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.3rem;
-            font-weight: normal;
-            color: var(--dark);
-        }
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            font-size: 0.95rem;
-            box-sizing: border-box;
-        }
-        .form-actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1.5rem;
-        }
-        .form-actions button {
-            flex: 1;
-            padding: 0.5rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .btn-save { background: var(--secondary); color: white; }
-        .btn-cancel { background: #95a5a6; color: white; }
-        .btn-save:hover { background: var(--secondary-hover); }
-        .btn-cancel:hover { background: #7f8c8d; }
-    </style>
 </head>
 <body>
     <?php require '../includes/header.php'; ?>
 
     <div class="container">
         <div class="page-title">
-            <h2><i class="fas fa-wrench"></i> Mantención de Vehículos</h2>
+            <h2><i class="fas fa-wrench"></i> Mantención de Vehículos..</h2>
         </div>
 
         <!-- Búsqueda de vehículo -->
