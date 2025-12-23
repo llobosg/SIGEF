@@ -1,8 +1,9 @@
-?php
-require '../session_check.php';
-if ($_SESSION['rol'] !== 'admin') {
-    die('Acceso denegado');
-}
+<?php
+    require '../session_check.php';
+    require '../includes/header.php';
+    if ($_SESSION['rol'] !== 'admin') {
+        die('Acceso denegado');
+    }
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -14,8 +15,6 @@ if ($_SESSION['rol'] !== 'admin') {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
 <body>
-    <?php require '../includes/header.php'; ?>
-
     <div class="container">
         <div class="page-title">
             <h2><i class="fas fa-wrench"></i> Mantención de Vehículos..</h2>
