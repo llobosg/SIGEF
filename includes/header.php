@@ -15,7 +15,7 @@ $rol = $_SESSION['rol'] ?? 'basico';
             <a href="/pages/monto_view.php">
                 <i class="fas fa-money-bill-wave"></i> Montos
             </a>
-            <a href="/pages/mantencion_view.php">
+            <a href="/pages/mantenciones_view.php">
                 <i class="fas fa-wrench"></i> Mantención
             </a>
         <?php else: ?>
