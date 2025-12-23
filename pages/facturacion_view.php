@@ -168,13 +168,6 @@ if (isset($_GET['edit'])) {
             </form>
         </div>
 
-        <!-- Botón Agregar Facturación -->
-        <div style="margin: 1.5rem 0; text-align: right;">
-            <a href="/pages/facturacion_view.php" class="btn-primary">
-                <i class="fas fa-plus"></i> Agregar Facturación
-            </a>
-        </div>
-
         <!-- Tabla de facturaciones históricas -->
         <div class="card">
             <h3><i class="fas fa-history"></i> Facturaciones Históricas</h3>
