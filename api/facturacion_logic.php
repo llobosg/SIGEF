@@ -15,12 +15,12 @@ if (isset($_GET['delete'])) {
     try {
         $pdo->prepare("DELETE FROM FACTURACION WHERE id_factura = ?")->execute([(int)$_GET['delete']]);
         header("Location: /pages/facturacion_view.php?msg=delete_success");
-        exit;
     } catch (Exception $e) {
         error_log("Error al eliminar facturación: " . $e->getMessage());
         header("Location: /pages/facturacion_view.php?msg=error");
-        exit;
     }
+    header("Location: /pages/facturacion_view.php?msg=success");
+    exit(); // ← ¡Este exit() es crucial!
 }
 
 // Guardar o actualizar

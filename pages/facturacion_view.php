@@ -108,7 +108,6 @@ if (isset($_GET['edit'])) {
             <form method="POST" action="../api/facturacion_logic.php">
                 <input type="hidden" name="id_factura" value="<?= $factura['id_factura'] ?? '' ?>">
                 <input type="hidden" name="id_vehiculo" id="id_vehiculo" value="<?= $factura['id_vehiculo'] ?? '' ?>">
-                <input type="hidden" name="monto_base" id="monto_base" value="<?= $factura['monto_m'] ?? '' ?>">
 
                 <div class="formulario-facturacion-grid">
                     <!-- Fila 1: Labels -->
