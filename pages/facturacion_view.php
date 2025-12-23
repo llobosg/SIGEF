@@ -105,7 +105,7 @@ if (isset($_GET['edit'])) {
         <!-- Formulario de Facturación -->
         <div class="card">
             <h3><i class="fas fa-receipt"></i> Ficha de Facturación</h3>
-            <form method="POST" action="facturacion_logic.php">
+            <form method="POST" action="../api/facturacion_logic.php">
                 <input type="hidden" name="id_factura" value="<?= $factura['id_factura'] ?? '' ?>">
                 <input type="hidden" name="id_vehiculo" id="id_vehiculo" value="<?= $factura['id_vehiculo'] ?? '' ?>">
                 <input type="hidden" name="monto_base" id="monto_base" value="<?= $factura['monto_m'] ?? '' ?>">
@@ -253,7 +253,7 @@ if (isset($_GET['edit'])) {
                             <a href="?edit=${f.id_factura}" class="btn-edit">
                                 <i class="fas fa-pencil-alt"></i>
                             </a>
-                            <a href="facturacion_logic.php?delete=${f.id_factura}" class="btn-delete" 
+                            <a href="../api/facturacion_logic.php?delete=${f.id_factura}" ...> 
                                onclick="return confirm('¿Eliminar facturación?')">
                                 <i class="fas fa-trash"></i>
                             </a>
