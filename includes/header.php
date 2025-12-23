@@ -1,5 +1,5 @@
 <?php
-// includes/header.php - Menú superior con íconos
+// includes/header.php - Menú superior con íconos y roles
 $rol = $_SESSION['rol'] ?? 'basico';
 ?>
 <div class="main-header">
@@ -12,6 +12,9 @@ $rol = $_SESSION['rol'] ?? 'basico';
             <a href="/pages/mantencion_view.php">
                 <i class="fas fa-wrench"></i> Gastos Flota
             </a>
+            <a href="/pages/facturacion_view.php">
+                <i class="fas fa-file-invoice"></i> Facturación
+            </a>
             <a href="/pages/vehiculos_view.php">
                 <i class="fas fa-truck"></i> Vehículos
             </a>
@@ -23,7 +26,7 @@ $rol = $_SESSION['rol'] ?? 'basico';
             </a>
         <?php else: ?>
             <a href="/pages/dashboard_basico.php">
-                <i class="fas fa-tachometer-alt"></i> Inicio
+                <i class="fas fa-tachometer-alt"></i> Dashboard
             </a>
         <?php endif; ?>
         <a href="/logout.php" style="color: #e74c3c;">
