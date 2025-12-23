@@ -9,6 +9,9 @@ $rol = $_SESSION['rol'] ?? 'basico';
             <a href="/pages/dashboard_admin.php">
                 <i class="fas fa-tachometer-alt"></i> Dashboard
             </a>
+            <a href="/pages/mantencion_view.php">
+                <i class="fas fa-wrench"></i> Gastos Flota
+            </a>
             <a href="/pages/vehiculos_view.php">
                 <i class="fas fa-truck"></i> Vehículos
             </a>
@@ -17,9 +20,6 @@ $rol = $_SESSION['rol'] ?? 'basico';
             </a>
             <a href="/pages/monto_view.php">
                 <i class="fas fa-money-bill-wave"></i> Montos
-            </a>
-            <a href="/pages/mantencion_view.php">
-                <i class="fas fa-wrench"></i> Mantención
             </a>
         <?php else: ?>
             <a href="/pages/dashboard_basico.php">

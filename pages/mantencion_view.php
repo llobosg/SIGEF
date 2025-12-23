@@ -469,7 +469,7 @@ if ($_SESSION['rol'] !== 'admin') {
             
             // Validar tipo_mant exactamente
             const tipoMant = document.getElementById('tipo_mant').value;
-            const valoresPermitidos = ['Carga Petróleo', 'Correctiva', 'Preventiva'];
+            const valoresPermitidos = ['carga_petroleo', 'correctiva', 'preventiva'];
             if (!valoresPermitidos.includes(tipoMant)) {
                 error('Tipo de mantención no válido');
                 return;
