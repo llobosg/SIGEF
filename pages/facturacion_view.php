@@ -249,12 +249,13 @@ if (isset($_GET['edit'])) {
                         <td>$${parseFloat(f.monto_m).toLocaleString()}</td>
                         <td>${f.qty_tipo_monto || '-'}</td>
                         <td>$${parseFloat(f.monto).toLocaleString()}</td>
+                        // DESPUÉS (correcto)
                         <td>
-                            <a href="?edit=${f.id_factura}" class="btn-edit">
+                            <a href="?edit=${f.id_factura}" class="btn-edit" title="Editar">
                                 <i class="fas fa-pencil-alt"></i>
                             </a>
-                            <a href="../api/facturacion_logic.php?delete=${f.id_factura}" ...> 
-                               onclick="return confirm('¿Eliminar facturación?')">
+                            <a href="../api/facturacion_logic.php?delete=${f.id_factura}" class="btn-delete" 
+                            onclick="return confirm('¿Eliminar facturación?')" title="Eliminar">
                                 <i class="fas fa-trash"></i>
                             </a>
                         </td>
