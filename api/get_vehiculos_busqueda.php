@@ -11,7 +11,7 @@ if (strlen($term) < 2) {
 }
 
 $stmt = $pdo->prepare("
-    SELECT id_vehiculo, patente, marca, modelo, year, nombre_vehiculo 
+    SELECT id_vehiculo, patente, marca, modelo, year, nombre_vehiculo, rev_tecnica, permiso_circ, nro_soap, seguro, aseguradora, nro_poliza 
     FROM VEHICULO 
     WHERE patente LIKE ? OR marca LIKE ? OR modelo LIKE ? OR nombre_vehiculo LIKE ?
     LIMIT 10
