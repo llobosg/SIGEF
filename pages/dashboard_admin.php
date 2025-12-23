@@ -1,30 +1,30 @@
 <?php
-require '../session_check.php';
-if ($_SESSION['rol'] !== 'admin') {
-    header("Location: /pages/dashboard_basico.php");
-    exit;
-}
+    require '../session_check.php';
+    if ($_SESSION['rol'] !== 'admin') {
+        header("Location: /pages/dashboard_basico.php");
+        exit;
+    }
 
-require '../config.php';
-$pdo = getDBConnection();
+    require '../config.php';
+    $pdo = getDBConnection();
 
-// Obtener nombre del usuario
-$nombre_usuario = $_SESSION['user'] ?? 'Administrador';
+    // Obtener nombre del usuario
+    $nombre_usuario = $_SESSION['user'] ?? 'Administrador';
 
-// Estadísticas
-$totalVehiculos = (int)$pdo->query("SELECT COUNT(*) FROM VEHICULO")->fetchColumn();
-$totalPersonal = (int)$pdo->query("SELECT COUNT(*) FROM PERSONAL")->fetchColumn();
-$totalMantenciones = (int)$pdo->query("SELECT COUNT(*) FROM MANTENCION")->fetchColumn();
+    // Estadísticas
+    $totalVehiculos = (int)$pdo->query("SELECT COUNT(*) FROM VEHICULO")->fetchColumn();
+    $totalPersonal = (int)$pdo->query("SELECT COUNT(*) FROM PERSONAL")->fetchColumn();
+    $totalMantenciones = (int)$pdo->query("SELECT COUNT(*) FROM MANTENCION")->fetchColumn();
 
-// Últimas mantenciones
-$stmt = $pdo->prepare("
-    SELECT fecha_mant, nombre_vehiculo, tipo_mant, costo
-    FROM MANTENCION
-    ORDER BY fecha_mant DESC
-    LIMIT 10
-");
-$stmt->execute();
-$ultimasMantenciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // Últimas mantenciones
+    $stmt = $pdo->prepare("
+        SELECT fecha_mant, nombre_vehiculo, tipo_mant, costo
+        FROM MANTENCION
+        ORDER BY fecha_mant DESC
+        LIMIT 10
+    ");
+    $stmt->execute();
+    $ultimasMantenciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -70,7 +70,7 @@ $ultimasMantenciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <!-- Búsqueda rápida -->
         <div style="margin-bottom: 1.5rem;">
             <input type="text" id="search-global" 
-                   placeholder="Buscar en vehículos o personal..."
+                   placeholder="Buscar vehículos por mantención"
                    style="width: 100%; max-width: 400px; padding: 0.75rem; border: 1px solid #ced4da; border-radius: 8px; font-size: 0.95rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
         </div>
 

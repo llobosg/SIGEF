@@ -1,8 +1,10 @@
 <?php
-    require '../session_check.php';
-    require '../includes/header.php';
+// pages/mantencion_view.php
+session_start();
+require '../session_check.php';
     if ($_SESSION['rol'] !== 'admin') {
-        die('Acceso denegado');
+        header("Location: /pages/dashboard_basico.php");
+        exit;
     }
 ?>
 <!DOCTYPE html>
