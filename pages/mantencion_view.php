@@ -244,40 +244,34 @@ if ($_SESSION['rol'] !== 'admin') {
 
         function seleccionarVehiculo(v) {
             vehiculoActual = v;
-            document.getElementById('id_vehiculo').value = v.id_vehiculo;
             
-            // Actualizar todos los campos del vehículo
+            // Mapeo de campos: [id_del_elemento, valor_del_vehiculo]
             const campos = [
-                { key: 'marca', value: v.marca || '-' },
-                { key: 'modelo', value: v.modelo || '-' },
-                { key: 'year', value: v.year || '-' },
-                { key: 'patente', value: v.patente || '-' },
-                { key: 'nombre_vehiculo', value: v.nombre_vehiculo || '-' },
-                { key: 'permiso_circ', value: v.permiso_circ || '-' },
-                { key: 'rev_tecnica', value: v.rev_tecnica || '-' },
-                { key: 'nro_soap', value: v.nro_soap || '-' },
-                { key: 'seguro', value: v.seguro || '-' },
-                { key: 'aseguradora', value: v.aseguradora || '-' },
-                { key: 'nro_poliza', value: v.nro_poliza || '-' }
+                ['veh-marca', v.marca || '-'],
+                ['veh-modelo', v.modelo || '-'],
+                ['veh-year', v.year || '-'],
+                ['veh-patente', v.patente || '-'],
+                ['veh-nombre', v.nombre_vehiculo || '-'],
+                ['veh-permiso', v.permiso_circ || '-'],
+                ['veh-revision', v.rev_tecnica || '-'],
+                ['veh-soap', v.nro_soap || '-'],
+                ['veh-seguro', v.seguro || '-'],
+                ['veh-aseguradora', v.aseguradora || '-'],
+                ['veh-poliza', v.nro_poliza || '-']
             ];
             
-            const contenedor = document.getElementById('datosVehiculo');
-            contenedor.innerHTML = campos.map(c => 
-                `<div class="dato-item"><strong>${c.key.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</strong> ${c.value}</div>`
-            ).join('');
+            // Actualizar cada campo con verificación
+            campos.forEach(([id, valor]) => {
+                const elemento = document.getElementById(id);
+                if (elemento) {
+                    elemento.textContent = valor;
+                } else {
+                    console.warn(`[WARNING] Elemento con ID "${id}" no encontrado`);
+                }
+            });
             
             cargarMantenciones(v.id_vehiculo);
             document.getElementById('resultadosBusqueda').style.display = 'none';
-        }
-
-        async function cargarMantenciones(id) {
-            try {
-                const r = await fetch(`../api/get_mantenciones.php?id_vehiculo=${id}`);
-                mantenciones = await r.json();
-            } catch (err) {
-                mantenciones = [];
-            }
-            renderTabla();
         }
 
         function renderTabla() {
