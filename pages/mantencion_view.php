@@ -66,7 +66,7 @@ if ($_SESSION['rol'] !== 'admin') {
                 <div class="dato-item"><strong>N° Póliza</strong> -</div>
             </div>
 
-            <button id="btnAgregarMantencion" class="btn-save" style="margin-top: 1.2rem; padding: 0.5rem 1.2rem;">
+            <button id="btnAgregarMantencion" class="btn-secondary" style="margin-top: 1.2rem; padding: 0.5rem 1.2rem;">
                 <i class="fas fa-plus"></i> Agregar Registro
             </button>
         </div>
