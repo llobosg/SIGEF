@@ -249,7 +249,7 @@ if ($_SESSION['rol'] !== 'admin') {
             const campos = [
                 ['veh-marca', v.marca || '-'],
                 ['veh-modelo', v.modelo || '-'],
-                ['veh-year', v.year || '-'],
+                ['veh-year', v.year ? String(v.year) : '-'],  // ← Manejo específico para year
                 ['veh-patente', v.patente || '-'],
                 ['veh-nombre', v.nombre_vehiculo || '-'],
                 ['veh-permiso', v.permiso_circ || '-'],
