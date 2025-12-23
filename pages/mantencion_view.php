@@ -354,34 +354,81 @@ if ($_SESSION['rol'] !== 'admin') {
         function configurarBusqueda() {
             const input = document.getElementById('busquedaVehiculo');
             const cont = document.getElementById('resultadosBusqueda');
+            let abortController = null; // Para cancelar peticiones anteriores
 
             input.addEventListener('input', async () => {
+                // Limpiar resultados inmediatamente
                 cont.innerHTML = '';
-                if (input.value.length < 2) {
-                    cont.style.display = 'none';
+                cont.style.display = 'none';
+                
+                const term = input.value.trim();
+                if (term.length < 2) {
                     return;
                 }
 
-                try {
-                    const r = await fetch(`../api/get_vehiculos_busqueda.php?q=${encodeURIComponent(input.value)}`);
-                    const data = await r.json();
+                // Cancelar petición anterior si existe
+                if (abortController) {
+                    abortController.abort();
+                }
+                abortController = new AbortController();
 
-                    data.forEach(v => {
+                try {
+                    const response = await fetch(
+                        `../api/get_vehiculos_busqueda.php?q=${encodeURIComponent(term)}`,
+                        { signal: abortController.signal }
+                    );
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Verificar que no se haya cancelado
+                    if (abortController.signal.aborted) {
+                        return;
+                    }
+
+                    // Limpiar nuevamente (por si hay demora)
+                    cont.innerHTML = '';
+                    
+                    if (data.length === 0) {
+                        cont.innerHTML = '<div style="padding: 8px; color: #999;">No se encontraron resultados</div>';
+                        cont.style.display = 'block';
+                        return;
+                    }
+
+                    // Eliminar duplicados (por si acaso)
+                    const uniqueData = data.filter((v, index, self) =>
+                        index === self.findIndex(v2 => v2.id_vehiculo === v.id_vehiculo)
+                    );
+
+                    uniqueData.forEach(v => {
                         const div = document.createElement('div');
                         div.textContent = `${v.patente} - ${v.marca} ${v.modelo} (${v.nombre_vehiculo})`;
                         div.style.padding = '8px';
                         div.style.cursor = 'pointer';
                         div.style.borderBottom = '1px solid #eee';
-                        div.onclick = () => seleccionarVehiculo(v);
+                        div.onclick = () => {
+                            cont.style.display = 'none';
+                            seleccionarVehiculo(v);
+                        };
                         cont.appendChild(div);
                     });
+                    
                     cont.style.display = 'block';
+
                 } catch (err) {
-                    console.error(err);
-                    error('Error en búsqueda');
+                    if (err.name !== 'AbortError') {
+                        console.error('Error en búsqueda:', err);
+                        error('Error al buscar vehículos');
+                        cont.innerHTML = '<div style="padding: 8px; color: #e74c3c;">Error de conexión</div>';
+                        cont.style.display = 'block';
+                    }
                 }
             });
 
+            // Cerrar resultados al hacer clic fuera
             document.addEventListener('click', (e) => {
                 if (!input.contains(e.target) && !cont.contains(e.target)) {
                     cont.style.display = 'none';
