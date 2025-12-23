@@ -122,24 +122,96 @@ body {
     min-width: 140px;
 }
 
-/* Botón Guardar (alineado a la derecha) */
-.form-row .btn-save {
-    margin-left: auto;
-    background: var(--secondary);
+/* Botones */
+.btn-primary {
+    background: #009966;
     color: white;
     border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
+    padding: 0.7rem 1.3rem;
+    border-radius: 6px;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-weight: bold;
-    transition: background 0.2s;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: background 0.3s;
 }
 
-.form-row .btn-save:hover {
-    background: var(--secondary-hover);
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.7rem 1.3rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+
+.btn-primary:hover {
+    background: #007a52;
+}
+
+.btn-add {
+    background: #0066cc;
+    color: white;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.btn-add:hover {
+    background: #0055aa;
+}
+
+.btn-comment {
+    background: #ff9900;
+    color: white;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.btn-comment:hover {
+    background: #e68900;
+}
+
+.btn-delete {
+    background: #cc0000;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.7rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.btn-delete:hover {
+    background: #aa0000;
+}
+
+.btn-warning {
+    background: #ff9800;
+    color: white;
+    border: none;
+    padding: 0.7rem 1.3rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+.btn-warning:hover {
+    background: #e68900;
+}
+/* Botones de acción */
+.action-buttons {
+    margin: 1.7rem 0;
+    display: flex;
+    gap: 1.2rem;
 }
 
 /* === TABLAS === */
@@ -363,22 +435,6 @@ body {
     justify-content: flex-end;
     margin-top: 1rem;
 }
-.form-actions .btn-save {
-    background: var(--secondary);
-    color: white;
-    border: none;
-    padding: 0.5rem 1.2rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    /* ¡NO width: 100% aquí! */
-}
-.btn-cancel { background: #95a5a6; color: white; }
-.btn-save:hover { background: var(--secondary-hover); }
-.btn-cancel:hover { background: #7f8c8d; }
 
 .form-grid {
     display: grid;
