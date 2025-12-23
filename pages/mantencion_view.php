@@ -1,12 +1,3 @@
-<?php
-// pages/mantencion_view.php
-session_start();
-require '../session_check.php';
-    if ($_SESSION['rol'] !== 'admin') {
-        header("Location: /pages/dashboard_basico.php");
-        exit;
-    }
-?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
