@@ -27,7 +27,7 @@ if ($_SESSION['rol'] !== 'admin') {
             <label><i class="fas fa-search"></i> Búsqueda Inteligente</label>
             <!-- El input ocupa el 100% del ancho disponible (hereda del contenedor padre) -->
             <input type="text" id="busquedaVehiculo" placeholder="Buscar por patente, marca, modelo o nombre del vehículo..." style="width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 6px;" />
-            <div id="resultados-busqueda" style="
+            <div id="resultadosBusqueda" style="
                 position: absolute;
                 top: 100%; /* Colocar justo debajo del input */
                 left: 0;   /* Alinear a la izquierda del contenedor padre */
