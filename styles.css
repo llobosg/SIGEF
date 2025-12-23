@@ -458,3 +458,28 @@ body {
     visibility: hidden;
 }
 
+/* Layout específico para datos del vehículo: 5 columnas */
+.datos-vehiculo-grid-5 {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+}
+
+/* Asegura que el sexto elemento comience en la nueva fila */
+.datos-vehiculo-grid-5 > div:nth-child(n+6) {
+    grid-column: span 1;
+}
+
+/* DATOS DEL VEHÍCULO - Layout 5+6 */
+#datosVehiculo {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+}
+
+/* Para pantallas pequeñas: una columna */
+@media (max-width: 768px) {
+    #datosVehiculo {
+        grid-template-columns: 1fr;
+    }
+}

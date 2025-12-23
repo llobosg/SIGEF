@@ -52,21 +52,57 @@ if ($_SESSION['rol'] !== 'admin') {
         <!-- DATOS DEL VEHÍCULO (siempre visible) -->
         <div class="card">
             <h3><i class="fas fa-car"></i> Datos del Vehículo</h3>
-            <div id="datosVehiculo" class="datos-vehiculo-grid">
-                <div class="dato-item"><strong>Marca</strong> -</div>
-                <div class="dato-item"><strong>Modelo</strong> -</div>
-                <div class="dato-item"><strong>Año</strong> -</div>
-                <div class="dato-item"><strong>Patente</strong> -</div>
-                <div class="dato-item"><strong>Nombre Vehículo</strong> -</div>
-                <div class="dato-item"><strong>Permiso Circulación</strong> -</div>
-                <div class="dato-item"><strong>Revisión Técnica</strong> -</div>
-                <div class="dato-item"><strong>N° SOAP</strong> -</div>
-                <div class="dato-item"><strong>Seguro</strong> -</div>
-                <div class="dato-item"><strong>Aseguradora</strong> -</div>
-                <div class="dato-item"><strong>N° Póliza</strong> -</div>
+            <div id="datosVehiculo" class="datos-vehiculo-grid-5">
+                <!-- Fila 1: 5 campos -->
+                <div class="form-group-inline">
+                    <label>Marca</label>
+                    <span id="veh-marca">-</span>
+                </div>
+                <div class="form-group-inline">
+                    <label>Modelo</label>
+                    <span id="veh-modelo">-</span>
+                </div>
+                <div class="form-group-inline">
+                    <label>Año</label>
+                    <span id="veh-year">-</span>
+                </div>
+                <div class="form-group-inline">
+                    <label>Patente</label>
+                    <span id="veh-patente">-</span>
+                </div>
+                <div class="form-group-inline">
+                    <label>Nombre Vehículo</label>
+                    <span id="veh-nombre">-</span>
+                </div>
+                
+                <!-- Fila 2: 6 campos -->
+                <div class="form-group-inline">
+                    <label>Permiso Circulación</label>
+                    <span id="veh-permiso">-</span>
+                </div>
+                <div class="form-group-inline">
+                    <label>Revisión Técnica</label>
+                    <span id="veh-revision">-</span>
+                </div>
+                <div class="form-group-inline">
+                    <label>N° SOAP</label>
+                    <span id="veh-soap">-</span>
+                </div>
+                <div class="form-group-inline">
+                    <label>Seguro</label>
+                    <span id="veh-seguro">-</span>
+                </div>
+                <div class="form-group-inline">
+                    <label>Aseguradora</label>
+                    <span id="veh-aseguradora">-</span>
+                </div>
+                <div class="form-group-inline">
+                    <label>N° Póliza</label>
+                    <span id="veh-poliza">-</span>
+                </div>
             </div>
 
-            <button id="btnAgregarMantencion" class="btn-secondary" style="margin-top: 1.2rem; padding: 0.5rem 1.2rem;">
+            <button id="btnAgregarMantencion" class="btn-comment" style="margin-top: 1.2rem; padding: 0.5rem 1.2rem;">
                 <i class="fas fa-plus"></i> Agregar Registro
             </button>
         </div>
