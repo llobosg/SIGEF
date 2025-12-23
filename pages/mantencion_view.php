@@ -99,7 +99,7 @@ if ($_SESSION['rol'] !== 'admin') {
 
     <!-- SUBMODAL -->
     <div id="submodalMantencion" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 800px;">
             <span class="close" id="cerrarSubmodal">&times;</span>
             <h3 id="tituloSubmodal">Registro de Mantenciones / Gastos</h3>
             
@@ -107,12 +107,12 @@ if ($_SESSION['rol'] !== 'admin') {
                 <input type="hidden" id="id_mantencion">
                 <input type="hidden" id="id_vehiculo">
 
-                <div class="form-group">
+                <!-- Fila 1 -->
+                <div class="form-group-inline">
                     <label>Fecha *</label>
                     <input type="date" id="fecha_mant" required>
                 </div>
-
-                <div class="form-group">
+                <div class="form-group-inline">
                     <label>Tipo Mantención *</label>
                     <select id="tipo_mant" required>
                         <option value="">Seleccionar</option>
@@ -122,32 +122,37 @@ if ($_SESSION['rol'] !== 'admin') {
                     </select>
                 </div>
 
-                <div class="form-group">
+                <!-- Fila 2 -->
+                <div class="form-group-inline">
                     <label>Kilometraje</label>
                     <input type="number" id="kilometraje" min="0">
                 </div>
-
-                <div class="form-group">
+                <div class="form-group-inline">
                     <label>Taller</label>
                     <input type="text" id="taller">
                 </div>
 
-                <div class="form-group">
+                <!-- Fila 3 -->
+                <div class="form-group-inline">
                     <label>Reparación</label>
                     <input type="text" id="reparacion">
                 </div>
-
-                <div class="form-group">
+                <div class="form-group-inline">
                     <label>Notas</label>
-                    <textarea id="notas_mant" rows="2"></textarea>
+                    <textarea id="notas_mant" rows="2" style="min-height: 60px;"></textarea>
                 </div>
 
-                <div class="form-group">
+                <!-- Fila 4 -->
+                <div class="form-group-inline">
                     <label>Costo *</label>
                     <input type="number" id="costo" required min="0" step="0.01">
                 </div>
+                <div class="form-group-inline" style="visibility: hidden;">
+                    <label></label>
+                    <span></span>
+                </div>
 
-                <div class="action-buttons">
+                <div class="action-buttons" style="margin-top: 1.5rem;">
                     <button type="submit" class="btn-primary">
                         <i class="fas fa-save"></i> Guardar
                     </button>

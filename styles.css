@@ -528,3 +528,46 @@ body {
     }
 }
 
+/* SUBMODAL DE MANTENCIÓN - Layout 2 columnas */
+#submodalMantencion .form-group-inline {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+#submodalMantencion .form-group-inline label {
+    flex: 0 0 140px;
+    font-weight: 500;
+    color: #444;
+    text-align: right;
+}
+
+#submodalMantencion .form-group-inline input,
+#submodalMantencion .form-group-inline select,
+#submodalMantencion .form-group-inline textarea {
+    flex: 1;
+    padding: 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background: white;
+}
+
+#submodalMantencion .form-group-inline textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Responsive para submodal */
+@media (max-width: 768px) {
+    #submodalMantencion .form-group-inline {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.4rem;
+    }
+    #submodalMantencion .form-group-inline label {
+        text-align: left;
+    }
+}
