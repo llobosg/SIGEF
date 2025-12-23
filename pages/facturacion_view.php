@@ -1,5 +1,4 @@
 <?php
-// pages/facturacion_view.php
 require '../session_check.php';
 if ($_SESSION['rol'] !== 'admin') {
     die('Acceso denegado');
@@ -27,7 +26,7 @@ if (isset($_GET['edit'])) {
     <style>
         .formulario-facturacion-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             gap: 0.8rem;
             margin: 1rem 0;
         }
@@ -60,9 +59,16 @@ if (isset($_GET['edit'])) {
             background-color: #f8f9fa;
             cursor: not-allowed;
         }
+        /* Responsive: en móviles, 2 columnas */
         @media (max-width: 768px) {
             .formulario-facturacion-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .formulario-facturacion-grid > div:nth-child(2n+1) {
+                grid-column: 1;
+            }
+            .formulario-facturacion-grid > div:nth-child(2n+2) {
+                grid-column: 2;
             }
         }
     </style>
@@ -96,49 +102,78 @@ if (isset($_GET['edit'])) {
             "></div>
         </div>
 
-        <!-- Formulario Facturación -->
-        <div class="formulario-facturacion-grid">
-        <!-- Fila 1: Labels -->
-        <div class="label-item">N° Factura</div>
-        <div class="label-item">Nombre Vehículo</div>
-        <div class="label-item">Tipo Monto</div>
-        <div class="label-item">Monto x Vehíc</div>
-        <div class="label-item">Cantidad</div>
-        <div class="label-item">Monto x Factura</div>
-        
-        <!-- Fila 2: Campos -->
-        <div class="field-item">
-            <input type="text" name="nro_factura" 
-                value="<?= htmlspecialchars($factura['nro_factura'] ?? '') ?>" 
-                required <?= $esEdicion ? '' : 'readonly' ?>>
+        <!-- Formulario de Facturación -->
+        <div class="card">
+            <h3><i class="fas fa-receipt"></i> Ficha de Facturación</h3>
+            <form method="POST" action="facturacion_logic.php">
+                <input type="hidden" name="id_factura" value="<?= $factura['id_factura'] ?? '' ?>">
+                <input type="hidden" name="id_vehiculo" id="id_vehiculo" value="<?= $factura['id_vehiculo'] ?? '' ?>">
+                <input type="hidden" name="monto_base" id="monto_base" value="<?= $factura['monto_m'] ?? '' ?>">
+
+                <div class="formulario-facturacion-grid">
+                    <!-- Fila 1: Labels -->
+                    <div class="label-item">N° Factura</div>
+                    <div class="label-item">Nombre Vehículo</div>
+                    <div class="label-item">Tipo Monto</div>
+                    <div class="label-item">Monto x Vehíc</div>
+                    <div class="label-item">Cantidad</div>
+                    <div class="label-item">Monto x Factura</div>
+                    
+                    <!-- Fila 2: Campos -->
+                    <div class="field-item">
+                        <input type="text" name="nro_factura" 
+                               value="<?= htmlspecialchars($factura['nro_factura'] ?? '') ?>" 
+                               required <?= $esEdicion ? '' : 'readonly' ?>>
+                    </div>
+                    <div class="field-item">
+                        <input type="text" name="nombre_vehiculo" id="nombre_vehiculo_display"
+                               value="<?= htmlspecialchars($factura['nombre_vehiculo'] ?? '') ?>" 
+                               readonly required>
+                    </div>
+                    <div class="field-item">
+                        <input type="text" name="tipo_monto" id="tipo_monto_display"
+                               value="<?= htmlspecialchars($factura['tipo_monto'] ?? '') ?>" 
+                               readonly required>
+                    </div>
+                    <div class="field-item">
+                        <input type="number" name="monto_m" id="monto_m_display"
+                               value="<?= $factura['monto_m'] ?? '' ?>" 
+                               readonly required step="0.01">
+                    </div>
+                    <div class="field-item">
+                        <input type="number" name="qty_tipo_monto" id="qty_tipo_monto" 
+                               value="<?= $factura['qty_tipo_monto'] ?? '' ?>" 
+                               min="1" required <?= $esEdicion ? '' : 'readonly' ?>
+                               onchange="calcularMontoTotal()">
+                    </div>
+                    <div class="field-item">
+                        <input type="number" name="monto" id="monto_total" 
+                               value="<?= $factura['monto'] ?? '' ?>" 
+                               readonly required step="0.01">
+                    </div>
+                </div>
+
+                <!-- Fecha -->
+                <div style="margin-top: 1rem;">
+                    <label>Fecha *</label>
+                    <input type="date" name="fecha" value="<?= $factura['fecha'] ?? date('Y-m-d') ?>" 
+                           required <?= $esEdicion ? '' : 'readonly' ?>>
+                </div>
+
+                <div class="action-buttons" style="margin-top: 1.5rem;">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Guardar Facturación
+                    </button>
+                </div>
+            </form>
         </div>
-        <div class="field-item">
-            <input type="text" name="nombre_vehiculo" id="nombre_vehiculo_display"
-                value="<?= htmlspecialchars($factura['nombre_vehiculo'] ?? '') ?>" 
-                readonly required>
+
+        <!-- Botón Agregar Facturación -->
+        <div style="margin: 1.5rem 0; text-align: right;">
+            <a href="/pages/facturacion_view.php" class="btn-primary">
+                <i class="fas fa-plus"></i> Agregar Facturación
+            </a>
         </div>
-        <div class="field-item">
-            <input type="text" name="tipo_monto" id="tipo_monto_display"
-                value="<?= htmlspecialchars($factura['tipo_monto'] ?? '') ?>" 
-                readonly required>
-        </div>
-        <div class="field-item">
-            <input type="number" name="monto_m" id="monto_m_display"
-                value="<?= $factura['monto_m'] ?? '' ?>" 
-                readonly required step="0.01">
-        </div>
-        <div class="field-item">
-            <input type="number" name="qty_tipo_monto" id="qty_tipo_monto" 
-                value="<?= $factura['qty_tipo_monto'] ?? '' ?>" 
-                min="1" required <?= $esEdicion ? '' : 'readonly' ?>
-                onchange="calcularMontoTotal()">
-        </div>
-        <div class="field-item">
-            <input type="number" name="monto" id="monto_total" 
-                value="<?= $factura['monto'] ?? '' ?>" 
-                readonly required step="0.01">
-        </div>
-    </div>
 
         <!-- Tabla de facturaciones históricas -->
         <div class="card">
@@ -195,7 +230,6 @@ if (isset($_GET['edit'])) {
                 setTimeout(() => toast.style.display = 'none', 400);
             }, 4000);
         }
-        // Notificaciones globales
         window.exito = (msg) => mostrarNotificacion(msg, 'success');
         window.error = (msg) => mostrarNotificacion(msg, 'error');
 
@@ -227,7 +261,7 @@ if (isset($_GET['edit'])) {
                                 <i class="fas fa-pencil-alt"></i>
                             </a>
                             <a href="facturacion_logic.php?delete=${f.id_factura}" class="btn-delete" 
-                            onclick="return confirm('¿Eliminar facturación?')">
+                               onclick="return confirm('¿Eliminar facturación?')">
                                 <i class="fas fa-trash"></i>
                             </a>
                         </td>
@@ -238,7 +272,7 @@ if (isset($_GET['edit'])) {
             }
         }
 
-        // Búsqueda inteligente (usa TU archivo existente: get_monto_busqueda.php)
+        // Búsqueda inteligente
         let busquedaTimeout;
         document.getElementById('busquedaMontos').addEventListener('input', function() {
             const term = this.value.trim();
@@ -250,7 +284,6 @@ if (isset($_GET['edit'])) {
 
             clearTimeout(busquedaTimeout);
             busquedaTimeout = setTimeout(() => {
-                // ✅ Usa TU archivo existente
                 fetch(`../api/get_monto_busqueda.php?q=${encodeURIComponent(term)}`)
                     .then(r => r.json())
                     .then(montos => {
@@ -266,16 +299,30 @@ if (isset($_GET['edit'])) {
                                 el.textContent = `${m.nombre_vehiculo} | ${m.tipo_monto} | ${m.tipo_personal} | $${parseFloat(m.monto).toLocaleString()}`;
                                 el.addEventListener('click', () => {
                                     if (<?= $esEdicion ? 'false' : 'true' ?>) {
-                                        document.getElementById('id_vehiculo').value = m.id_vehiculo || '';
-                                        document.getElementById('nombre_vehiculo_display').value = m.nombre_vehiculo || '';
-                                        document.getElementById('tipo_monto_display').value = m.tipo_monto || '';
-                                        document.getElementById('monto_m_display').value = m.monto || 0; // ← Nuevo campo
-                                        document.getElementById('monto_base').value = m.monto || 0;
-                                        document.getElementById('qty_tipo_monto').readOnly = false;
-                                        document.getElementById('qty_tipo_monto').value = '';
-                                        document.querySelector('input[name="nro_factura"]').readOnly = false;
-                                        document.querySelector('input[name="fecha"]').readOnly = false;
-                                        document.getElementById('monto_total').value = '';
+                                        const campos = [
+                                            { id: 'id_vehiculo', value: m.id_vehiculo || '' },
+                                            { id: 'nombre_vehiculo_display', value: m.nombre_vehiculo || '' },
+                                            { id: 'tipo_monto_display', value: m.tipo_monto || '' },
+                                            { id: 'monto_m_display', value: m.monto || 0 },
+                                            { id: 'monto_base', value: m.monto || 0 }
+                                        ];
+                                        
+                                        campos.forEach(item => {
+                                            const el = document.getElementById(item.id);
+                                            if (el) el.value = item.value;
+                                        });
+                                        
+                                        const qtyField = document.getElementById('qty_tipo_monto');
+                                        const nroField = document.querySelector('input[name="nro_factura"]');
+                                        const fechaField = document.querySelector('input[name="fecha"]');
+                                        const montoTotal = document.getElementById('monto_total');
+                                        
+                                        if (qtyField) qtyField.readOnly = false;
+                                        if (nroField) nroField.readOnly = false;
+                                        if (fechaField) fechaField.readOnly = false;
+                                        if (montoTotal) montoTotal.value = '';
+                                        
+                                        if (qtyField) qtyField.value = '';
                                     }
                                     div.style.display = 'none';
                                 });
@@ -315,7 +362,6 @@ if (isset($_GET['edit'])) {
                 if (text) mostrarNotificacion(text, type);
             }
             
-            // Calcular monto inicial si es edición
             if (<?= $esEdicion ? 'true' : 'false' ?>) {
                 calcularMontoTotal();
             }
