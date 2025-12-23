@@ -131,101 +131,121 @@ error_log("[MANTENCION_VIEW] Sesión verificada, rol=admin. Renderizando HTML.")
 
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
-        console.log("[JS] Inicio de script mantencion_view");
-        
-        let vehiculoActual = null;
-        let mantenciones = [];
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("[JS] DOM cargado, iniciando script mantencion_view");
 
-        let busquedaTimeout;
-        document.getElementById('busquedaVehiculo').addEventListener('input', function() {
-            console.log("[JS] Input detectado:", this.value);
-            const term = this.value.trim();
-            const div = document.getElementById('sugerenciasVehiculo');
-            div.innerHTML = '';
-            if (term.length < 2) return;
+            // --- Todo el código JavaScript anterior va aquí adentro ---
+            
+            let vehiculoActual = null;
+            let mantenciones = [];
 
-            clearTimeout(busquedaTimeout);
-            busquedaTimeout = setTimeout(() => {
-                console.log("[JS] Consultando API con término:", term);
-                fetch(`../api/get_vehiculos_busqueda.php?q=${encodeURIComponent(term)}`)
-                    .then(r => {
-                        console.log("[JS] Respuesta API:", r.status);
-                        if (!r.ok) throw new Error('API error ' + r.status);
-                        return r.json();
-                    })
-                    .then(vehiculos => {
-                        console.log("[JS] Vehículos recibidos:", vehiculos);
-                        div.innerHTML = '';
-                        vehiculos.forEach(v => {
-                            const el = document.createElement('div');
-                            el.style.padding = '0.5rem';
-                            el.style.cursor = 'pointer';
-                            el.style.borderBottom = '1px solid #eee';
-                            el.textContent = `${v.patente} - ${v.marca} ${v.modelo} (${v.nombre_vehiculo})`;
-                            el.addEventListener('click', () => {
-                                console.log("[JS] Vehículo seleccionado:", v);
-                                seleccionarVehiculo(v);
+            // Función auxiliar para log seguro
+            function log(...args) {
+                console.log('[MANTENCION_JS]', ...args);
+            }
+
+            // Verificar que los elementos esenciales existan
+            const busquedaInput = document.getElementById('busquedaVehiculo');
+            if (!busquedaInput) {
+                log("ERROR: No se encontró #busquedaVehiculo");
+                return;
+            }
+
+            let busquedaTimeout;
+            busquedaInput.addEventListener('input', function() {
+                log("Input detectado:", this.value);
+                const term = this.value.trim();
+                const div = document.getElementById('sugerenciasVehiculo');
+                if (div) div.innerHTML = '';
+                if (term.length < 2) return;
+
+                clearTimeout(busquedaTimeout);
+                busquedaTimeout = setTimeout(() => {
+                    log("Consultando API con término:", term);
+                    fetch(`../api/get_vehiculos_busqueda.php?q=${encodeURIComponent(term)}`)
+                        .then(r => {
+                            log("Respuesta API:", r.status);
+                            if (!r.ok) throw new Error('API error ' + r.status);
+                            return r.json();
+                        })
+                        .then(vehiculos => {
+                            log("Vehículos recibidos:", vehiculos);
+                            const div = document.getElementById('sugerenciasVehiculo');
+                            if (!div) return;
+                            div.innerHTML = '';
+                            vehiculos.forEach(v => {
+                                const el = document.createElement('div');
+                                el.style.padding = '0.5rem';
+                                el.style.cursor = 'pointer';
+                                el.style.borderBottom = '1px solid #eee';
+                                el.textContent = `${v.patente} - ${v.marca} ${v.modelo} (${v.nombre_vehiculo})`;
+                                el.addEventListener('click', () => {
+                                    log("Vehículo seleccionado:", v);
+                                    seleccionarVehiculo(v);
+                                });
+                                div.appendChild(el);
                             });
-                            div.appendChild(el);
+                        })
+                        .catch(err => {
+                            console.error("[JS] Error en búsqueda:", err);
+                            const div = document.getElementById('sugerenciasVehiculo');
+                            if (div) {
+                                div.innerHTML = '<div style="padding:0.5rem;color:#e74c3c;">Error al cargar vehículos</div>';
+                            }
                         });
-                    })
-                    .catch(err => {
-                        console.error("[JS] Error en búsqueda:", err);
-                        div.innerHTML = '<div style="padding:0.5rem;color:#e74c3c;">Error al cargar vehículos</div>';
-                    });
-            }, 300);
+                }, 300);
+            });
+
+            function seleccionarVehiculo(veh) {
+                log("Procesando selección de vehículo:", veh);
+                const safeVeh = {
+                    id_vehiculo: veh.id_vehiculo || null,
+                    patente: veh.patente || '',
+                    marca: veh.marca || '',
+                    modelo: veh.modelo || '',
+                    year: veh.year || '',
+                    nombre_vehiculo: veh.nombre_vehiculo || '',
+                    permiso_circ: veh.permiso_circ || '',
+                    rev_tecnica: veh.rev_tecnica || '',
+                    nro_soap: veh.nro_soap || '',
+                    seguro: veh.seguro || '',
+                    aseguradora: veh.aseguradora || '',
+                    nro_poliza: veh.nro_poliza || ''
+                };
+
+                vehiculoActual = safeVeh;
+                document.getElementById('busquedaVehiculo').value = `${safeVeh.patente} - ${safeVeh.marca} ${safeVeh.modelo}`;
+                const sugerencias = document.getElementById('sugerenciasVehiculo');
+                if (sugerencias) sugerencias.innerHTML = '';
+
+                const datosDiv = document.getElementById('datosVehiculo');
+                if (datosDiv) {
+                    datosDiv.innerHTML = `
+                        <div class="dato-item"><strong>Marca</strong> ${safeVeh.marca}</div>
+                        <div class="dato-item"><strong>Modelo</strong> ${safeVeh.modelo}</div>
+                        <div class="dato-item"><strong>Año</strong> ${safeVeh.year}</div>
+                        <div class="dato-item"><strong>Patente</strong> ${safeVeh.patente}</div>
+                        <div class="dato-item"><strong>Nombre</strong> ${safeVeh.nombre_vehiculo}</div>
+                        <div class="dato-item"><strong>Permiso Circ.</strong> ${safeVeh.permiso_circ || '-'}</div>
+                        <div class="dato-item"><strong>Rev. Técnica</strong> ${safeVeh.rev_tecnica || '-'}</div>
+                        <div class="dato-item"><strong>N° SOAP</strong> ${safeVeh.nro_soap || '-'}</div>
+                        <div class="dato-item"><strong>Seguro</strong> ${safeVeh.seguro || '-'}</div>
+                        <div class="dato-item"><strong>Aseguradora</strong> ${safeVeh.aseguradora || '-'}</div>
+                        <div class="dato-item"><strong>N° Póliza</strong> ${safeVeh.nro_poliza || '-'}</div>
+                    `;
+                }
+
+                const panel = document.getElementById('panelVehiculo');
+                if (panel) panel.style.display = 'block';
+                log("Panel de vehículo mostrado");
+            }
+
+            // Placeholder functions
+            window.cargarMantenciones = () => log("cargarMantenciones no implementado");
+            window.editarMantencion = (id) => log("editarMantencion", id);
+            window.eliminarMantencion = (id) => log("eliminarMantencion", id);
+
         });
-
-        function seleccionarVehiculo(veh) {
-            console.log("[JS] Procesando selección de vehículo:", veh);
-            const safeVeh = {
-                id_vehiculo: veh.id_vehiculo || null,
-                patente: veh.patente || '',
-                marca: veh.marca || '',
-                modelo: veh.modelo || '',
-                year: veh.year || '',
-                nombre_vehiculo: veh.nombre_vehiculo || '',
-                permiso_circ: veh.permiso_circ || '',
-                rev_tecnica: veh.rev_tecnica || '',
-                nro_soap: veh.nro_soap || '',
-                seguro: veh.seguro || '',
-                aseguradora: veh.aseguradora || '',
-                nro_poliza: veh.nro_poliza || ''
-            };
-
-            vehiculoActual = safeVeh;
-            document.getElementById('busquedaVehiculo').value = `${safeVeh.patente} - ${safeVeh.marca} ${safeVeh.modelo}`;
-            document.getElementById('sugerenciasVehiculo').innerHTML = '';
-
-            const datosDiv = document.getElementById('datosVehiculo');
-            datosDiv.innerHTML = `
-                <div class="dato-item"><strong>Marca</strong> ${safeVeh.marca}</div>
-                <div class="dato-item"><strong>Modelo</strong> ${safeVeh.modelo}</div>
-                <div class="dato-item"><strong>Año</strong> ${safeVeh.year}</div>
-                <div class="dato-item"><strong>Patente</strong> ${safeVeh.patente}</div>
-                <div class="dato-item"><strong>Nombre</strong> ${safeVeh.nombre_vehiculo}</div>
-                <div class="dato-item"><strong>Permiso Circ.</strong> ${safeVeh.permiso_circ || '-'}</div>
-                <div class="dato-item"><strong>Rev. Técnica</strong> ${safeVeh.rev_tecnica || '-'}</div>
-                <div class="dato-item"><strong>N° SOAP</strong> ${safeVeh.nro_soap || '-'}</div>
-                <div class="dato-item"><strong>Seguro</strong> ${safeVeh.seguro || '-'}</div>
-                <div class="dato-item"><strong>Aseguradora</strong> ${safeVeh.aseguradora || '-'}</div>
-                <div class="dato-item"><strong>N° Póliza</strong> ${safeVeh.nro_poliza || '-'}</div>
-            `;
-
-            document.getElementById('panelVehiculo').style.display = 'block';
-            console.log("[JS] Panel de vehículo mostrado");
-        }
-
-        // Funciones placeholder para evitar errores
-        function cargarMantenciones() {
-            console.log("[JS] cargarMantenciones() no implementado aún");
-        }
-        function editarMantencion(id) {
-            console.log("[JS] editarMantencion() no implementado aún");
-        }
-        function eliminarMantencion(id) {
-            console.log("[JS] eliminarMantencion() no implementado aún");
-        }
-    </script>
+        </script>
 </body>
 </html>
