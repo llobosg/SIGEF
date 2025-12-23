@@ -1,5 +1,6 @@
 <?php
 // api/facturacion_logic.php
+// Lógica para crear, actualizar y eliminar registros de facturación
 require '../session_check.php';
 if ($_SESSION['rol'] !== 'admin') {
     http_response_code(403);
