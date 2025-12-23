@@ -483,3 +483,47 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+/* DATOS DEL VEHÍCULO - Labels arriba, valores abajo */
+.datos-vehiculo-container {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.8rem;
+    margin: 1rem 0;
+}
+
+.datos-vehiculo-container .label-item,
+.datos-vehiculo-container .value-item {
+    text-align: center;
+    padding: 0.3rem;
+}
+
+.datos-vehiculo-container .label-item {
+    font-weight: 600;
+    color: #444;
+    border-bottom: 2px solid #0066cc;
+    font-size: 0.85rem;
+}
+
+.datos-vehiculo-container .value-item {
+    min-height: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+}
+
+/* Para la primera fila (5 columnas), ocultar la sexta celda */
+.datos-vehiculo-container .empty-cell {
+    visibility: hidden;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .datos-vehiculo-container {
+        grid-template-columns: 1fr;
+    }
+    .datos-vehiculo-container .empty-cell {
+        display: none;
+    }
+}

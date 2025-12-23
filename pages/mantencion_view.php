@@ -52,54 +52,38 @@ if ($_SESSION['rol'] !== 'admin') {
         <!-- DATOS DEL VEHÍCULO (siempre visible) -->
         <div class="card">
             <h3><i class="fas fa-car"></i> Datos del Vehículo</h3>
-            <div id="datosVehiculo" class="datos-vehiculo-grid-5">
-                <!-- Fila 1: 5 campos -->
-                <div class="form-group-inline">
-                    <label>Marca</label>
-                    <span id="veh-marca">-</span>
-                </div>
-                <div class="form-group-inline">
-                    <label>Modelo</label>
-                    <span id="veh-modelo">-</span>
-                </div>
-                <div class="form-group-inline">
-                    <label>Año</label>
-                    <span id="veh-year">-</span>
-                </div>
-                <div class="form-group-inline">
-                    <label>Patente</label>
-                    <span id="veh-patente">-</span>
-                </div>
-                <div class="form-group-inline">
-                    <label>Nombre Vehículo</label>
-                    <span id="veh-nombre">-</span>
-                </div>
+            <div class="datos-vehiculo-container">
+                <!-- Fila 1: Labels (5 campos + 1 vacío) -->
+                <div class="label-item">Marca</div>
+                <div class="label-item">Modelo</div>
+                <div class="label-item">Año</div>
+                <div class="label-item">Patente</div>
+                <div class="label-item">Nombre Vehículo</div>
+                <div class="label-item empty-cell"></div>
                 
-                <!-- Fila 2: 6 campos -->
-                <div class="form-group-inline">
-                    <label>Permiso Circulación</label>
-                    <span id="veh-permiso">-</span>
-                </div>
-                <div class="form-group-inline">
-                    <label>Revisión Técnica</label>
-                    <span id="veh-revision">-</span>
-                </div>
-                <div class="form-group-inline">
-                    <label>N° SOAP</label>
-                    <span id="veh-soap">-</span>
-                </div>
-                <div class="form-group-inline">
-                    <label>Seguro</label>
-                    <span id="veh-seguro">-</span>
-                </div>
-                <div class="form-group-inline">
-                    <label>Aseguradora</label>
-                    <span id="veh-aseguradora">-</span>
-                </div>
-                <div class="form-group-inline">
-                    <label>N° Póliza</label>
-                    <span id="veh-poliza">-</span>
-                </div>
+                <!-- Fila 2: Valores (5 campos + 1 vacío) -->
+                <div class="value-item" id="veh-marca">-</div>
+                <div class="value-item" id="veh-modelo">-</div>
+                <div class="value-item" id="veh-year">-</div>
+                <div class="value-item" id="veh-patente">-</div>
+                <div class="value-item" id="veh-nombre">-</div>
+                <div class="value-item empty-cell"></div>
+                
+                <!-- Fila 3: Labels (6 campos) -->
+                <div class="label-item">Permiso Circulación</div>
+                <div class="label-item">Revisión Técnica</div>
+                <div class="label-item">N° SOAP</div>
+                <div class="label-item">Seguro</div>
+                <div class="label-item">Aseguradora</div>
+                <div class="label-item">N° Póliza</div>
+                
+                <!-- Fila 4: Valores (6 campos) -->
+                <div class="value-item" id="veh-permiso">-</div>
+                <div class="value-item" id="veh-revision">-</div>
+                <div class="value-item" id="veh-soap">-</div>
+                <div class="value-item" id="veh-seguro">-</div>
+                <div class="value-item" id="veh-aseguradora">-</div>
+                <div class="value-item" id="veh-poliza">-</div>
             </div>
 
             <button id="btnAgregarMantencion" class="btn-comment" style="margin-top: 1.2rem; padding: 0.5rem 1.2rem;">
