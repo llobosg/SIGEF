@@ -8,24 +8,23 @@ if ($_SESSION['rol'] !== 'admin') {
 require '../config.php';
 $pdo = getDBConnection();
 
-// Totales
-$totalVehiculos = $pdo->query("SELECT COUNT(*) FROM VEHICULO")->fetchColumn();
-$totalPersonal = $pdo->query("SELECT COUNT(*) FROM PERSONAL")->fetchColumn();
-$totalMantenciones = $pdo->query("SELECT COUNT(*) FROM MANTENCION")->fetchColumn();
+// Obtener nombre del usuario
+$nombre_usuario = $_SESSION['user'] ?? 'Administrador';
+
+// Estadísticas
+$totalVehiculos = (int)$pdo->query("SELECT COUNT(*) FROM VEHICULO")->fetchColumn();
+$totalPersonal = (int)$pdo->query("SELECT COUNT(*) FROM PERSONAL")->fetchColumn();
+$totalMantenciones = (int)$pdo->query("SELECT COUNT(*) FROM MANTENCION")->fetchColumn();
 
 // Últimas mantenciones
 $stmt = $pdo->prepare("
-    SELECT m.id_mantencion, m.fecha_mant, m.nombre_vehiculo, m.kilometraje, 
-           m.tipo_mant, m.taller, m.costo, p.nombre AS nombre_chofer
-    FROM MANTENCION m
-    LEFT JOIN PERSONAL p ON p.id_personal = (
-        SELECT id_personal FROM PERSONAL LIMIT 1 -- placeholder; ajustar si se vincula
-    )
-    ORDER BY m.fecha_mant DESC
+    SELECT fecha_mant, nombre_vehiculo, tipo_mant, costo
+    FROM MANTENCION
+    ORDER BY fecha_mant DESC
     LIMIT 10
 ");
 $stmt->execute();
-$ultimasMantenciones = $stmt->fetchAll();
+$ultimasMantenciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -38,53 +37,55 @@ $ultimasMantenciones = $stmt->fetchAll();
 <body>
     <?php require '../includes/header.php'; ?>
 
-    <div class="container">
-        <div class="page-title">
-            <h2><i class="fas fa-tachometer-alt"></i> Dashboard Administrativo</h2>
+    <div class="container" style="padding: 0 1%;">
+        <!-- Saludo -->
+        <div style="margin-bottom: 1.5rem; padding: 0.8rem; background-color: #e9ecef; border-radius: 6px;">
+            <h2 style="margin: 0; font-size: 1.2rem; color: #2c3e50;">
+                Bienvenido/a, <?= htmlspecialchars($nombre_usuario) ?>
+            </h2>
         </div>
 
         <!-- Tarjetas de estadísticas -->
-        <div class="stats-cards">
-            <div class="stat-card">
-                <i class="fas fa-truck"></i>
-                <div class="number"><?= $totalVehiculos ?></div>
-                <div>Vehículos</div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+            <div style="background: #f8f9fa; padding: 1.2rem; border-radius: 10px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.08); border: 1px solid #e9ecef;">
+                <h3 style="margin: 0 0 0.8rem 0; color: #2c3e50; font-size: 1rem; font-weight: 600;">
+                    <i class="fas fa-truck"></i> Vehículos
+                </h3>
+                <p style="font-size: 2rem; font-weight: bold; color: #2c3e50; margin: 0;"><?= $totalVehiculos ?></p>
             </div>
-            <div class="stat-card">
-                <i class="fas fa-user-friends"></i>
-                <div class="number"><?= $totalPersonal ?></div>
-                <div>Personal</div>
+            <div style="background: #f0f9ff; padding: 1.2rem; border-radius: 10px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.08); border: 1px solid #e9ecef;">
+                <h3 style="margin: 0 0 0.8rem 0; color: #27ae60; font-size: 1rem; font-weight: 600;">
+                    <i class="fas fa-user-friends"></i> Personal
+                </h3>
+                <p style="font-size: 2rem; font-weight: bold; color: #27ae60; margin: 0;"><?= $totalPersonal ?></p>
             </div>
-            <div class="stat-card">
-                <i class="fas fa-wrench"></i>
-                <div class="number"><?= $totalMantenciones ?></div>
-                <div>Mantenciones</div>
+            <div style="background: #f0fdf4; padding: 1.2rem; border-radius: 10px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.08); border: 1px solid #e9ecef;">
+                <h3 style="margin: 0 0 0.8rem 0; color: #8e44ad; font-size: 1rem; font-weight: 600;">
+                    <i class="fas fa-wrench"></i> Mantenciones
+                </h3>
+                <p style="font-size: 2rem; font-weight: bold; color: #8e44ad; margin: 0;"><?= $totalMantenciones ?></p>
             </div>
         </div>
 
-        <!-- Búsqueda inteligente -->
-        <div class="search-section">
-            <h3><i class="fas fa-search"></i> Búsqueda Rápida</h3>
-            <input type="text" id="busquedaGlobal" 
-                   placeholder="Buscar por RUT, patente o nombre de vehículo...">
-            <div id="resultadosBusqueda" style="margin-top: 0.5rem; display: none;"></div>
+        <!-- Búsqueda rápida -->
+        <div style="margin-bottom: 1.5rem;">
+            <input type="text" id="search-global" 
+                   placeholder="Buscar en vehículos o personal..."
+                   style="width: 100%; max-width: 400px; padding: 0.75rem; border: 1px solid #ced4da; border-radius: 8px; font-size: 0.95rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
         </div>
 
-        <!-- Últimas mantenciones (interpretado como "prospectos") -->
-        <div class="prospectos-title">
-            <i class="fas fa-history"></i>
-            <h3>Últimas Mantenciones</h3>
-        </div>
+        <!-- Últimas mantenciones -->
+        <h3 style="margin: 1.5rem 0 1rem 0; color: #2c3e50; font-size: 1.1rem;">
+            <i class="fas fa-history"></i> Últimas Mantenciones
+        </h3>
 
-        <div class="card">
+        <div class="table-container">
             <table class="data-table">
                 <thead>
                     <tr>
                         <th>Fecha</th>
                         <th>Vehículo</th>
-                        <th>Kilometraje</th>
                         <th>Tipo</th>
-                        <th>Taller</th>
                         <th>Costo</th>
                     </tr>
                 </thead>
@@ -93,9 +94,7 @@ $ultimasMantenciones = $stmt->fetchAll();
                         <tr>
                             <td><?= htmlspecialchars($m['fecha_mant']) ?></td>
                             <td><?= htmlspecialchars($m['nombre_vehiculo']) ?></td>
-                            <td><?= $m['kilometraje'] ?: '-' ?></td>
                             <td><?= htmlspecialchars($m['tipo_mant']) ?></td>
-                            <td><?= htmlspecialchars($m['taller']) ?: '-' ?></td>
                             <td>$<?= number_format($m['costo'], 0, ',', '.') ?></td>
                         </tr>
                     <?php endforeach; ?>
@@ -105,31 +104,9 @@ $ultimasMantenciones = $stmt->fetchAll();
     </div>
 
     <script>
-        // Búsqueda inteligente (simulada por ahora)
-        document.getElementById('busquedaGlobal').addEventListener('input', function() {
-            const term = this.value.trim();
-            const div = document.getElementById('resultadosBusqueda');
-            div.style.display = term ? 'block' : 'none';
-            if (term) {
-                div.innerHTML = `<div style="padding: 0.5rem; background: #ecf0f1; border-radius: 4px;">
-                    Resultados para: <strong>${term}</strong> (implementar en versión futura)
-                </div>`;
-            }
+        document.getElementById('search-global').addEventListener('keyup', function() {
+            // Implementar búsqueda en futuro (por ahora solo UI)
         });
-
-        // Notificación al cargar
-        if (window.location.search.includes('msg=welcome')) {
-            Toastify({
-                text: "👋 Bienvenido, <?= $_SESSION['user'] ?>",
-                duration: 4000,
-                gravity: "top",
-                position: "right",
-                backgroundColor: "#3498db"
-            }).showToast();
-        }
     </script>
-
-    <!-- Si usas toastify en otras páginas, asegúrate de incluirlo -->
-    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </body>
 </html>

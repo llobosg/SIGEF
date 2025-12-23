@@ -55,15 +55,15 @@ if (isset($_GET['edit'])) {
                     <label>Año</label>
                     <label>Patente</label>
                     <label>Nombre Vehículo</label>
-                    <label></label> <!-- Espaciador si se necesita -->
+                    <label></label>
 
-                    <!-- Fila 2: Campos 1-5 -->
+                    <!-- Fila 2: Campos superiores -->
                     <input type="text" name="marca" value="<?= htmlspecialchars($vehiculo['marca'] ?? '') ?>" required>
                     <input type="text" name="modelo" value="<?= htmlspecialchars($vehiculo['modelo'] ?? '') ?>" required>
                     <input type="number" name="year" value="<?= $vehiculo['year'] ?? '' ?>" required>
                     <input type="text" name="patente" value="<?= htmlspecialchars($vehiculo['patente'] ?? '') ?>" required>
                     <input type="text" name="nombre_vehiculo" value="<?= htmlspecialchars($vehiculo['nombre_vehiculo'] ?? '') ?>" required>
-                    <div></div> <!-- Espaciador -->
+                    <div></div>
 
                     <!-- Fila 3: Labels inferiores -->
                     <label>Permiso Circulación</label>

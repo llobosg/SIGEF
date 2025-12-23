@@ -379,3 +379,25 @@ body {
 .btn-cancel { background: #95a5a6; color: white; }
 .btn-save:hover { background: var(--secondary-hover); }
 .btn-cancel:hover { background: #7f8c8d; }
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.8rem;
+    margin-bottom: 1.2rem;
+}
+.form-grid label {
+    text-align: center;
+    font-weight: normal;
+    color: var(--dark);
+}
+.form-grid input,
+.form-grid select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+}
+.form-grid > div:empty {
+    visibility: hidden;
+}
