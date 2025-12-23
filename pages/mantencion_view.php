@@ -133,9 +133,9 @@ if ($_SESSION['rol'] !== 'admin') {
                 <div class="form-group">
                     <label>Tipo Mantención *</label>
                     <select id="tipo_mant" required>
-                        <option value="Carga Petróleo">Carga Petróleo</option>
-                        <option value="Correctiva">Correctiva</option>
-                        <option value="Preventiva">Preventiva</option>
+                        <option value="carga_petroleo">Carga Petróleo</option>
+                        <option value="correctiva">Correctiva</option>
+                        <option value="preventiva">Preventiva</option>
                     </select>
                 </div>
 
@@ -168,7 +168,7 @@ if ($_SESSION['rol'] !== 'admin') {
                     <button type="submit" class="btn-primary">
                         <i class="fas fa-save"></i> Guardar
                     </button>
-                    <button type="button" id="btnCancelarSubmodal" class="btn-cancel">
+                    <button type="button" id="btnCancelarSubmodal" class="btn-secondary">
                         <i class="fas fa-times"></i> Cancelar
                     </button>
                 </div>
