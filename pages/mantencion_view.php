@@ -127,9 +127,9 @@ if ($_SESSION['rol'] !== 'admin') {
                     <select id="tipo_mant" required 
                             style="flex: 1; padding: 0.6rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9rem; background: white;">
                         <option value="">Seleccionar</option>
-                        <option value="Carga Petróleo">Carga Petróleo</option>
-                        <option value="Correctiva">Correctiva</option>
-                        <option value="Preventiva">Preventiva</option>
+                        <option value="carga_petroleo">Carga Petróleo</option>
+                        <option value="correctiva">Correctiva</option>
+                        <option value="preventiva">Preventiva</option>
                     </select>
                 </div>
 
