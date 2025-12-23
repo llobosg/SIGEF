@@ -140,7 +140,7 @@ if ($_SESSION['rol'] !== 'admin') {
                         style="flex: 1; padding: 0.6rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9rem; background: white;">
                 </div>
                 <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; font-size: 0.95rem;">
-                    <label style="flex: 0 0 140px; font-weight: 500; color: #444; text-align: right;">Taller</label>
+                    <label style="flex: 0 0 140px; font-weight: 500; color: #444; text-align: right;">Lugar/Taller</label>
                     <input type="text" id="taller" 
                         style="flex: 1; padding: 0.6rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9rem; background: white;">
                 </div>
