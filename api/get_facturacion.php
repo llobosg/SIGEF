@@ -1,5 +1,6 @@
 <?php
 // api/get_facturacion.php
+// API para obtener datos de facturación
 header('Content-Type: application/json');
 require '../config.php';
 
