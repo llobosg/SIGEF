@@ -157,7 +157,8 @@ if (isset($_GET['edit'])) {
                             <th>Vehículo</th>
                             <th>Tipo Monto</th>
                             <th>Tipo Personal</th>
-                            <th>Monto</th>
+                            <th>Monto_P</th>
+                            <th>Monto_F</th>
                             <th>Acción</th>
                         </tr>
                     </thead>
