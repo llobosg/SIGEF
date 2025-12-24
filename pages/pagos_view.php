@@ -369,13 +369,16 @@ if (isset($_GET['edit'])) {
                         el.style.cursor = 'pointer';
                         el.style.borderBottom = '1px solid #eee';
                         el.textContent = `${f.nro_factura} - ${f.cliente || 'Sin cliente'} - $${parseFloat(f.saldo).toLocaleString()}`;
+                        // En la búsqueda de facturación, actualiza los campos
                         el.addEventListener('click', () => {
                             facturacionSeleccionada = f;
                             document.getElementById('nro_factura_hidden').value = f.nro_factura;
+                            document.getElementById('cliente_hidden').value = f.cliente || '';
                             document.getElementById('fecha_factura_hidden').value = f.fecha_factura;
                             document.getElementById('saldo_hidden').value = f.saldo;
                             document.getElementById('monto_f_hidden').value = f.monto_f;
                             document.getElementById('monto_p_hidden').value = f.monto_p;
+                            document.getElementById('monto_p_display').value = f.monto_p; // ← Nuevo campo visible
                             div.style.display = 'none';
                         });
                         div.appendChild(el);
@@ -426,7 +429,7 @@ if (isset($_GET['edit'])) {
         // Calcular monto en submodal
         document.getElementById('qty_pago_tipo_monto').addEventListener('input', function() {
             const qty = parseFloat(this.value) || 0;
-            const montoP = parseFloat(document.getElementById('monto_p_hidden').value) || 0;
+            const montoP = parseFloat(document.getElementById('monto_p_display').value) || 0; // ← Usa el campo visible
             const total = qty * montoP;
             document.getElementById('monto_pago').value = total.toFixed(2);
         });
@@ -462,17 +465,21 @@ if (isset($_GET['edit'])) {
                 }
             }
 
+            // En el guardado
             const data = {
                 id_personal: document.getElementById('id_personal').value,
                 id_vehiculo: document.getElementById('id_vehiculo_pago').value,
                 nombre: document.getElementById('nombre_display').value,
                 tipo_personal: document.getElementById('tipo_personal_display').value,
                 nro_factura: document.getElementById('nro_factura_hidden').value,
+                cliente: document.getElementById('cliente_hidden').value, // ← Nuevo campo
                 fecha: document.getElementById('fecha').value,
+                fecha_factura: document.getElementById('fecha_factura_hidden').value, // ← Nuevo campo
                 tipo_monto: document.getElementById('tipo_monto_pago').value,
                 qty_pago_tipo_monto: document.getElementById('qty_pago_tipo_monto').value,
                 monto: document.getElementById('monto_pago').value,
-                fecha_factura: document.getElementById('fecha_factura_hidden').value
+                monto_p: document.getElementById('monto_p_hidden').value, // ← Nuevo campo
+                monto_f: document.getElementById('monto_f_hidden').value  // ← Nuevo campo
             };
 
             try {
