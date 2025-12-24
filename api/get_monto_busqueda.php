@@ -18,8 +18,8 @@ try {
             nombre_vehiculo, 
             tipo_monto, 
             tipo_personal, 
-            monto_p,  // ← Campo nuevo
-            monto_f   // ← Campo nuevo
+            monto_p,
+            monto_f
         FROM MONTO 
         WHERE nombre_vehiculo LIKE ? OR tipo_monto LIKE ? OR tipo_personal LIKE ?
         ORDER BY nombre_vehiculo
