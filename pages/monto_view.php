@@ -113,7 +113,7 @@ if (isset($_GET['edit'])) {
                     
                     <!-- Fila 2: Campos -->
                     <div class="field-item">
-                        <input type="text" id="nombre_vehiculo_display" name="nombre_vehiculo_display" 
+                        <input type="text" name="nombre_vehiculo" id="nombre_vehiculo_display" ...> 
                             value="<?= htmlspecialchars($monto['nombre_vehiculo'] ?? '') ?>" 
                             required>
                     </div>
