@@ -182,20 +182,20 @@ if (isset($_GET['edit'])) {
                 <div class="form-group">
                     <label>Búsqueda de Facturación *</label>
                     <input type="text" id="busquedaFacturacion" 
-                           placeholder="Buscar por N° Factura o Cliente..."
-                           style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
+                        placeholder="Buscar por N° Factura o Cliente..."
+                        style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
                     <div id="resultadosFacturacion" 
-                         style="position: absolute; background: white; border: 1px solid #ccc; width: 100%; max-height: 200px; overflow-y: auto; display: none; z-index: 1000; margin-top: 0.2rem;"></div>
+                        style="position: absolute; background: white; border: 1px solid #ccc; width: 100%; max-height: 200px; overflow-y: auto; display: none; z-index: 1000; margin-top: 0.2rem;"></div>
                 </div>
 
                 <!-- Búsqueda Vehículo -->
                 <div class="form-group">
                     <label>Búsqueda de Vehículo *</label>
                     <input type="text" id="busquedaVehiculo" 
-                           placeholder="Buscar por nombre del vehículo..."
-                           style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
+                        placeholder="Buscar por nombre del vehículo..."
+                        style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
                     <div id="resultadosVehiculo" 
-                         style="position: absolute; background: white; border: 1px solid #ccc; width: 100%; max-height: 200px; overflow-y: auto; display: none; z-index: 1000; margin-top: 0.2rem;"></div>
+                        style="position: absolute; background: white; border: 1px solid #ccc; width: 100%; max-height: 200px; overflow-y: auto; display: none; z-index: 1000; margin-top: 0.2rem;"></div>
                 </div>
 
                 <!-- Campos del pago -->
@@ -205,25 +205,35 @@ if (isset($_GET['edit'])) {
                 <input type="hidden" id="monto_f_hidden">
                 <input type="hidden" id="monto_p_hidden">
                 <input type="hidden" id="id_vehiculo_pago">
+                <input type="hidden" id="cliente_hidden">
 
-                <div class="form-group">
-                    <label>Tipo Monto *</label>
-                    <select id="tipo_monto_pago" required>
-                        <option value="">Seleccionar</option>
-                        <option value="día">Día</option>
-                        <option value="Guía">Guía</option>
-                        <option value="Distancia">Distancia</option>
-                    </select>
+                <!-- Layout: tipo_monto | monto_p -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0;">
+                    <div class="form-group">
+                        <label>Tipo Monto *</label>
+                        <select id="tipo_monto_pago" required>
+                            <option value="">Seleccionar</option>
+                            <option value="día">Día</option>
+                            <option value="Guía">Guía</option>
+                            <option value="Distancia">Distancia</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Monto P *</label>
+                        <input type="number" id="monto_p_display" readonly step="0.01">
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Cantidad *</label>
-                    <input type="number" id="qty_pago_tipo_monto" min="1" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Monto *</label>
-                    <input type="number" id="monto_pago" readonly step="0.01">
+                <!-- Layout: cantidad | monto -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label>Cantidad *</label>
+                        <input type="number" id="qty_pago_tipo_monto" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Monto *</label>
+                        <input type="number" id="monto_pago" readonly step="0.01">
+                    </div>
                 </div>
 
                 <div style="display: flex; gap: 0.5rem; margin-top: 1.5rem;">
