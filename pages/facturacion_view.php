@@ -202,6 +202,20 @@ if (isset($_GET['edit'])) {
 
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
+        // Agregar al inicio del script
+        let formularioEnviado = false;
+
+        // En el submit del formulario
+        document.querySelector('form').addEventListener('submit', function(e) {
+            if (formularioEnviado) {
+                e.preventDefault();
+                console.log('[DEBUG] Formulario ya enviado, evitando doble submit');
+                return false;
+            }
+            formularioEnviado = true;
+            console.log('[DEBUG] Formulario enviado por primera vez');
+        });
+        
         function mostrarNotificacion(mensaje, tipo = 'info') {
             const toast = document.getElementById('toast');
             const messageEl = document.getElementById('toast-message');
