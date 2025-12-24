@@ -515,6 +515,61 @@ if (isset($_GET['edit'])) {
             closeResults('busquedaFacturacion', 'resultadosFacturacion');
             closeResults('busquedaVehiculo', 'resultadosVehiculo');
         });
+
+        // Cargar tabla de pagos
+        async function cargarTablaPagos() {
+            try {
+                const res = await fetch('../api/get_pagos.php');
+                const data = await res.json();
+                const tbody = document.getElementById('tablaPagos');
+                
+                if (!tbody) {
+                    console.warn('[PAGOS] Elemento #tablaPagos no encontrado');
+                    return;
+                }
+                
+                tbody.innerHTML = data.map(p => `
+                    <tr>
+                        <td>${p.nro_factura || '-'}</td>
+                        <td>${p.cliente || '-'}</td>
+                        <td>${p.nombre_vehiculo || '-'}</td>
+                        <td>${p.tipo_monto || '-'}</td>
+                        <td>${p.qty_pago_tipo_monto || '-'}</td>
+                        <td>$${parseFloat(p.monto || 0).toLocaleString()}</td>
+                        <td>
+                            <button type="button" onclick="editarPago(${p.id_pago})" class="btn-edit">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+                            <button type="button" onclick="eliminarPago(${p.id_pago})" class="btn-delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+                
+            } catch (err) {
+                console.error('Error al cargar pagos:', err);
+                error('Error al cargar la tabla de pagos');
+            }
+        }
+
+        // Funciones para editar y eliminar (placeholder)
+        function editarPago(id) {
+            console.log('Editar pago ID:', id);
+            warning('Funcionalidad de edición en desarrollo');
+        }
+
+        function eliminarPago(id) {
+            if (!confirm('¿Eliminar este registro de pago?')) return;
+            console.log('Eliminar pago ID:', id);
+            warning('Funcionalidad de eliminación en desarrollo');
+        }
+
+        // Inicializar la carga cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', () => {
+            // Cargar la tabla de pagos al inicio
+            cargarTablaPagos();
+        });
     </script>
 </body>
 </html>
