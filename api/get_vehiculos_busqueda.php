@@ -1,20 +1,16 @@
 <?php
 // api/get_vehiculos_busqueda.php
 header('Content-Type: application/json');
-error_reporting(E_ALL); // Para debugging
-
 require '../config.php';
 
 $term = $_GET['q'] ?? '';
 if (strlen($term) < 2) {
-    echo json_encode([]);
+    echo json_encode([]); // ← Siempre devuelve un array
     exit;
 }
 
 try {
     $pdo = getDBConnection();
-    
-    // Verificar que los campos existan en tu tabla VEHICULO
     $stmt = $pdo->prepare("
         SELECT 
             id_vehiculo, 
@@ -34,12 +30,14 @@ try {
     
     $search = "%$term%";
     $stmt->execute([$search, $search, $search, $search]);
+    
+    // ✅ fetchAll() devuelve un ARRAY de objetos
     $vehiculos = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    echo json_encode($vehiculos);
+    echo json_encode($vehiculos); // ← Esto será: [{...}, {...}]
     
 } catch (Exception $e) {
     error_log("[VEHICULOS_BUSQUEDA] Error: " . $e->getMessage());
-    echo json_encode([]);
+    echo json_encode([]); // ← Siempre devuelve un array, incluso en errores
 }
 ?>
