@@ -134,8 +134,8 @@ if (isset($_GET['edit'])) {
                                value="<?= htmlspecialchars($factura['tipo_monto'] ?? '') ?>" 
                                readonly required>
                     </div>
-                    <<!-- Campo oculto para el envío (con name) -->
-                    <input type="hidden" name="monto_m" id="monto_m_hidden" value="<?= $factura['monto_m'] ?? '' ?>">
+                    <!-- Campo oculto para el envío (con name) -->
+                    <input type="hidden" name="monto_m" id="monto_m_hidden" value="<?= htmlspecialchars($factura['monto_m'] ?? '0', ENT_QUOTES, 'UTF-8') ?>">
 
                     <!-- Campo de display solo para visualización (sin name) -->
                     <div class="field-item">
