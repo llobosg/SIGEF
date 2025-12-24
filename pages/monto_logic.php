@@ -37,22 +37,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        if ($id) {
-            // Actualizar
-            $pdo->prepare("UPDATE MONTO SET 
-                id_vehiculo = ?, 
-                nombre_vehiculo = ?, 
-                tipo_monto = ?, 
-                tipo_personal = ?, 
-                monto = ? 
-                WHERE id_monto = ?")
-                ->execute([$id_vehiculo, $nombre_vehiculo, $tipo_monto, $tipo_personal, $monto, $id]);
-        } else {
-            // Insertar
-            $pdo->prepare("INSERT INTO MONTO (id_vehiculo, nombre_vehiculo, tipo_monto, tipo_personal, monto) 
-                VALUES (?, ?, ?, ?, ?)")
-                ->execute([$id_vehiculo, $nombre_vehiculo, $tipo_monto, $tipo_personal, $monto]);
-        }
+        // En monto_logic.php
+    if ($id) {
+        // Actualizar
+        $pdo->prepare("UPDATE MONTO SET 
+            id_vehiculo = ?, 
+            nombre_vehiculo = ?, 
+            tipo_monto = ?, 
+            tipo_personal = ?, 
+            monto_p = ?,  // ← Nuevo campo
+            monto_f = ?   // ← Nuevo campo
+            WHERE id_monto = ?")
+            ->execute([$id_vehiculo, $nombre_vehiculo, $tipo_monto, $tipo_personal, $monto_p, $monto_f, $id]);
+    } else {
+        // Insertar
+        $pdo->prepare("INSERT INTO MONTO (id_vehiculo, nombre_vehiculo, tipo_monto, tipo_personal, monto_p, monto_f) 
+            VALUES (?, ?, ?, ?, ?, ?)")
+            ->execute([$id_vehiculo, $nombre_vehiculo, $tipo_monto, $tipo_personal, $monto_p, $monto_f]);
+    }
         header("Location: /pages/monto_view.php?msg=success");
         exit;
     } catch (Exception $e) {

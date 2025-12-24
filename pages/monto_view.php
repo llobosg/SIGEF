@@ -26,7 +26,7 @@ if (isset($_GET['edit'])) {
     <style>
         .formulario-montos-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(5, 1fr); /* ← Cambiado de 4 a 5 columnas */
             gap: 0.8rem;
             margin: 1rem 0;
         }
@@ -107,16 +107,17 @@ if (isset($_GET['edit'])) {
                     <div class="label-item">Nombre Vehículo</div>
                     <div class="label-item">Tipo Monto</div>
                     <div class="label-item">Tipo Personal</div>
-                    <div class="label-item">Monto ($)</div>
+                    <div class="label-item">Monto P ($)</div>
+                    <div class="label-item">Monto F ($)</div>
                     
                     <!-- Fila 2: Campos -->
                     <div class="field-item">
                         <input type="text" id="nombre_vehiculo_display" name="nombre_vehiculo" 
-                               value="<?= htmlspecialchars($monto['nombre_vehiculo'] ?? '') ?>" 
-                               <?= $esEdicion ? '' : 'readonly' ?> required>
+                            value="<?= htmlspecialchars($monto['nombre_vehiculo'] ?? '') ?>" 
+                            required>
                     </div>
                     <div class="field-item">
-                        <select name="tipo_monto" required <?= $esEdicion ? '' : 'disabled' ?>>
+                        <select name="tipo_monto" required>
                             <option value="">Seleccionar</option>
                             <option value="Guía" <?= ($monto['tipo_monto'] ?? '') === 'Guía' ? 'selected' : '' ?>>Guía</option>
                             <option value="Distancia" <?= ($monto['tipo_monto'] ?? '') === 'Distancia' ? 'selected' : '' ?>>Distancia</option>
@@ -124,15 +125,17 @@ if (isset($_GET['edit'])) {
                         </select>
                     </div>
                     <div class="field-item">
-                        <select name="tipo_personal" required <?= $esEdicion ? '' : 'disabled' ?>>
+                        <select name="tipo_personal" required>
                             <option value="">Seleccionar</option>
                             <option value="Chofer" <?= ($monto['tipo_personal'] ?? '') === 'Chofer' ? 'selected' : '' ?>>Chofer</option>
                             <option value="Peoneta" <?= ($monto['tipo_personal'] ?? '') === 'Peoneta' ? 'selected' : '' ?>>Peoneta</option>
                         </select>
                     </div>
                     <div class="field-item">
-                        <input type="number" name="monto" value="<?= $monto['monto'] ?? '' ?>" 
-                               required min="0" step="0.01" <?= $esEdicion ? '' : 'readonly' ?>>
+                        <input type="number" name="monto_p" value="<?= $monto['monto_p'] ?? '' ?>" required min="0" step="0.01">
+                    </div>
+                    <div class="field-item">
+                        <input type="number" name="monto_f" value="<?= $monto['monto_f'] ?? '' ?>" required min="0" step="0.01">
                     </div>
                 </div>
 
@@ -203,6 +206,9 @@ if (isset($_GET['edit'])) {
         async function cargarTablaMontos() {
             try {
                 const res = await fetch('../api/get_monto.php');
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
                 const data = await res.json();
                 const tbody = document.getElementById('tablaMontos');
                 tbody.innerHTML = data.map(m => `
@@ -210,13 +216,14 @@ if (isset($_GET['edit'])) {
                         <td>${m.nombre_vehiculo || '-'}</td>
                         <td>${m.tipo_monto}</td>
                         <td>${m.tipo_personal}</td>
-                        <td>$${parseFloat(m.monto).toLocaleString()}</td>
+                        <td>$${parseFloat(m.monto_p || 0).toLocaleString()}</td>
+                        <td>$${parseFloat(m.monto_f || 0).toLocaleString()}</td>
                         <td>
                             <a href="?edit=${m.id_monto}" class="btn-edit">
                                 <i class="fas fa-pencil-alt"></i>
                             </a>
                             <a href="monto_logic.php?delete=${m.id_monto}" class="btn-delete" 
-                               onclick="return confirm('¿Eliminar?')">
+                            onclick="return confirm('¿Eliminar?')">
                                 <i class="fas fa-trash"></i>
                             </a>
                         </td>
@@ -224,10 +231,11 @@ if (isset($_GET['edit'])) {
                 `).join('');
             } catch (err) {
                 console.error('Error al cargar montos:', err);
+                error('Error al cargar la tabla de montos');
             }
         }
 
-        // Búsqueda inteligente (solo vehículos, no montos)
+        // Búsqueda inteligente
         let busquedaTimeout;
         document.getElementById('busquedaVehiculo').addEventListener('input', function() {
             const term = this.value.trim();
@@ -239,34 +247,44 @@ if (isset($_GET['edit'])) {
 
             clearTimeout(busquedaTimeout);
             busquedaTimeout = setTimeout(() => {
-                fetch(`../api/get_vehiculos_busqueda.php?q=${encodeURIComponent(term)}`)
-                    .then(r => r.json())
-                    .then(vehiculos => {
+                fetch(`../api/get_monto_busqueda.php?q=${encodeURIComponent(term)}`)
+                    .then(r => {
+                        if (!r.ok) {
+                            throw new Error(`HTTP error! status: ${r.status}`);
+                        }
+                        return r.json();
+                    })
+                    .then(montos => {
                         div.innerHTML = '';
-                        if (vehiculos.length === 0) {
+                        if (montos.length === 0) {
                             div.innerHTML = '<div style="padding:8px;color:#999;">Sin resultados</div>';
                         } else {
-                            const unicos = vehiculos.filter((v, i, a) => 
-                                i === a.findIndex(v2 => v2.id_vehiculo === v.id_vehiculo)
+                            const unicos = montos.filter((v, i, a) => 
+                                i === a.findIndex(v2 => v2.id_monto === v.id_monto)
                             );
-                            unicos.forEach(v => {
+                            unicos.forEach(m => {
                                 const el = document.createElement('div');
                                 el.style.padding = '8px';
                                 el.style.cursor = 'pointer';
                                 el.style.borderBottom = '1px solid #eee';
-                                el.textContent = `${v.patente} - ${v.marca} ${v.modelo} (${v.nombre_vehiculo})`;
+                                // Mostrar ambos montos en la búsqueda
+                                el.textContent = `${m.nombre_vehiculo} | ${m.tipo_monto} | ${m.tipo_personal} | P: $${parseFloat(m.monto_p).toLocaleString()} | F: $${parseFloat(m.monto_f).toLocaleString()}`;
                                 el.addEventListener('click', () => {
-                                    // Solo en modo creación (no edición)
-                                    if (<?= $esEdicion ? 'false' : 'true' ?>) {
-                                        document.getElementById('id_vehiculo').value = v.id_vehiculo;
-                                        document.getElementById('nombre_vehiculo_display').value = v.nombre_vehiculo;
-                                        
-                                        // Habilitar campos para edición inmediata
-                                        document.getElementById('nombre_vehiculo_display').readOnly = false;
-                                        document.querySelector('select[name="tipo_monto"]').disabled = false;
-                                        document.querySelector('select[name="tipo_personal"]').disabled = false;
-                                        document.querySelector('input[name="monto"]').readOnly = false;
-                                    }
+                                    // Cargar todos los campos del monto seleccionado
+                                    document.getElementById('id_monto').value = m.id_monto;
+                                    document.getElementById('id_vehiculo').value = m.id_vehiculo || '';
+                                    document.getElementById('nombre_vehiculo_display').value = m.nombre_vehiculo || '';
+                                    
+                                    // Actualizar selects
+                                    document.querySelector('select[name="tipo_monto"]').value = m.tipo_monto || '';
+                                    document.querySelector('select[name="tipo_personal"]').value = m.tipo_personal || '';
+                                    
+                                    // Actualizar campos de monto (si existen en el formulario)
+                                    const montoPField = document.querySelector('input[name="monto_p"]');
+                                    const montoFField = document.querySelector('input[name="monto_f"]');
+                                    if (montoPField) montoPField.value = m.monto_p || '';
+                                    if (montoFField) montoFField.value = m.monto_f || '';
+                                    
                                     div.style.display = 'none';
                                 });
                                 div.appendChild(el);
@@ -275,7 +293,10 @@ if (isset($_GET['edit'])) {
                         div.style.display = 'block';
                     })
                     .catch(err => {
+                        console.error('Error en búsqueda:', err);
                         error('Error en búsqueda');
+                        div.innerHTML = '<div style="padding:8px;color:#e74c3c;">Error de conexión</div>';
+                        div.style.display = 'block';
                     });
             }, 300);
         });

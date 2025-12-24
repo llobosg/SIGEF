@@ -9,15 +9,28 @@ if (strlen($term) < 2) {
     exit;
 }
 
-$pdo = getDBConnection();
-$stmt = $pdo->prepare("
-    SELECT id_monto, id_vehiculo, nombre_vehiculo, tipo_monto, tipo_personal, monto
-    FROM MONTO 
-    WHERE nombre_vehiculo LIKE ? OR tipo_monto LIKE ? OR tipo_personal LIKE ?
-    ORDER BY nombre_vehiculo
-    LIMIT 10
-");
-$search = "%$term%";
-$stmt->execute([$search, $search, $search]);
-echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+try {
+    $pdo = getDBConnection();
+    $stmt = $pdo->prepare("
+        SELECT 
+            id_monto, 
+            id_vehiculo, 
+            nombre_vehiculo, 
+            tipo_monto, 
+            tipo_personal, 
+            monto_p,  // ← Campo nuevo
+            monto_f   // ← Campo nuevo
+        FROM MONTO 
+        WHERE nombre_vehiculo LIKE ? OR tipo_monto LIKE ? OR tipo_personal LIKE ?
+        ORDER BY nombre_vehiculo
+        LIMIT 10
+    ");
+    $search = "%$term%";
+    $stmt->execute([$search, $search, $search]);
+    echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+    
+} catch (Exception $e) {
+    error_log("[GET_MONTO_BUSQUEDA] Error: " . $e->getMessage());
+    echo json_encode([]);
+}
 ?>
