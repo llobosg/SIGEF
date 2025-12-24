@@ -113,7 +113,9 @@ if (isset($_GET['edit'])) {
                     
                     <!-- Fila 2: Campos -->
                     <div class="field-item">
-                        <input type="text" name="nombre_vehiculo" id="nombre_vehiculo_display" ...> 
+                        <input type="text" 
+                            name="nombre_vehiculo" 
+                            id="nombre_vehiculo_display"
                             value="<?= htmlspecialchars($monto['nombre_vehiculo'] ?? '') ?>" 
                             required>
                     </div>
@@ -181,6 +183,7 @@ if (isset($_GET['edit'])) {
 
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
+        // Notificaciones
         function mostrarNotificacion(mensaje, tipo = 'info') {
             const toast = document.getElementById('toast');
             const messageEl = document.getElementById('toast-message');
@@ -212,16 +215,13 @@ if (isset($_GET['edit'])) {
         async function cargarTablaMontos() {
             try {
                 const res = await fetch('../api/get_monto.php');
-                if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
-                }
                 const data = await res.json();
                 const tbody = document.getElementById('tablaMontos');
                 tbody.innerHTML = data.map(m => `
                     <tr>
                         <td>${m.nombre_vehiculo || '-'}</td>
-                        <td>${m.tipo_monto}</td>
-                        <td>${m.tipo_personal}</td>
+                        <td>${m.tipo_monto || '-'}</td>
+                        <td>${m.tipo_personal || '-'}</td>
                         <td>$${parseFloat(m.monto_p || 0).toLocaleString()}</td>
                         <td>$${parseFloat(m.monto_f || 0).toLocaleString()}</td>
                         <td>
@@ -270,17 +270,14 @@ if (isset($_GET['edit'])) {
                                 el.style.borderBottom = '1px solid #eee';
                                 el.textContent = `${v.patente} - ${v.marca} ${v.modelo} (${v.nombre_vehiculo})`;
                                 el.addEventListener('click', () => {
-                                    // Actualizar CAMPOS OCULTOS
                                     const idVehiculoField = document.getElementById('id_vehiculo');
                                     if (idVehiculoField) {
                                         idVehiculoField.value = v.id_vehiculo || '';
                                     }
                                     
-                                    // Actualizar CAMPO VISIBLE DE NOMBRE VEHÍCULO
                                     const nombreVehiculoField = document.querySelector('input[name="nombre_vehiculo"]');
                                     if (nombreVehiculoField) {
                                         nombreVehiculoField.value = v.nombre_vehiculo || '';
-                                        console.log('Nombre vehículo actualizado:', v.nombre_vehiculo); // Para debugging
                                     }
                                     
                                     div.style.display = 'none';
@@ -292,29 +289,6 @@ if (isset($_GET['edit'])) {
                     })
                     .catch(err => {
                         error('Error en búsqueda');
-                    });
-            }, 300);
-        });
-        
-        // Actualizar selects
-        const tipoMontoSelect = document.querySelector('select[name="tipo_monto"]');
-        const tipoPersonalSelect = document.querySelector('select[name="tipo_personal"]');
-        
-        if (tipoMontoSelect) tipoMontoSelect.value = m.tipo_monto || '';
-        if (tipoPersonalSelect) tipoPersonalSelect.value = m.tipo_personal || '';
-        
-        div.style.display = 'none';
-    });
-    div.appendChild(el);
-});
-                        }
-                        div.style.display = 'block';
-                    })
-                    .catch(err => {
-                        console.error('Error en búsqueda:', err);
-                        error('Error en búsqueda');
-                        div.innerHTML = '<div style="padding:8px;color:#e74c3c;">Error de conexión</div>';
-                        div.style.display = 'block';
                     });
             }, 300);
         });
