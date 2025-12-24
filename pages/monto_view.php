@@ -132,10 +132,14 @@ if (isset($_GET['edit'])) {
                         </select>
                     </div>
                     <div class="field-item">
-                        <input type="number" name="monto_p" value="<?= $monto['monto_p'] ?? '' ?>" required min="0" step="0.01">
+                        <input type="number" name="monto_p" 
+                            value="<?= $monto['monto_p'] ?? '0.00' ?>" 
+                            required min="0" step="0.01">
                     </div>
                     <div class="field-item">
-                        <input type="number" name="monto_f" value="<?= $monto['monto_f'] ?? '' ?>" required min="0" step="0.01">
+                        <input type="number" name="monto_f" 
+                            value="<?= $monto['monto_f'] ?? '0.00' ?>" 
+                            required min="0" step="0.01">
                     </div>
                 </div>
 
