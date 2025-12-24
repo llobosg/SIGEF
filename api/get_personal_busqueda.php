@@ -10,7 +10,7 @@ if (strlen($term) < 2) {
 
 $pdo = getDBConnection();
 $stmt = $pdo->prepare("
-    SELECT id_personal, nombre, tipo_personal
+    SELECT DISTINCT id_personal, nombre, tipo_personal  -- ← DISTINCT para evitar duplicados
     FROM PERSONAL 
     WHERE nombre LIKE ?
     ORDER BY nombre
