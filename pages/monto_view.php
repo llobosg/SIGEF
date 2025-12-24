@@ -253,43 +253,47 @@ if (isset($_GET['edit'])) {
 
             clearTimeout(busquedaTimeout);
             busquedaTimeout = setTimeout(() => {
-                fetch(`../api/get_monto_busqueda.php?q=${encodeURIComponent(term)}`)
-                    .then(r => {
-                        if (!r.ok) {
-                            throw new Error(`HTTP error! status: ${r.status}`);
-                        }
-                        return r.json();
-                    })
-                    .then(montos => {
+                fetch(`../api/get_vehiculos_busqueda.php?q=${encodeURIComponent(term)}`)
+                    .then(r => r.json())
+                    .then(vehiculos => {
                         div.innerHTML = '';
-                        if (montos.length === 0) {
+                        if (vehiculos.length === 0) {
                             div.innerHTML = '<div style="padding:8px;color:#999;">Sin resultados</div>';
                         } else {
-                            const unicos = montos.filter((v, i, a) => 
-                                i === a.findIndex(v2 => v2.id_monto === v.id_monto)
+                            const unicos = vehiculos.filter((v, i, a) => 
+                                i === a.findIndex(v2 => v2.id_vehiculo === v.id_vehiculo)
                             );
-                            unicos.forEach(m => {
+                            unicos.forEach(v => {
                                 const el = document.createElement('div');
                                 el.style.padding = '8px';
                                 el.style.cursor = 'pointer';
                                 el.style.borderBottom = '1px solid #eee';
-                                el.textContent = `${m.nombre_vehiculo} | ${m.tipo_monto} | ${m.tipo_personal} | P: $${parseFloat(m.monto_p).toLocaleString()} | F: $${parseFloat(m.monto_f).toLocaleString()}`;
+                                el.textContent = `${v.patente} - ${v.marca} ${v.modelo} (${v.nombre_vehiculo})`;
                                 el.addEventListener('click', () => {
-                                    const elementos = [
-                                        { id: 'id_monto', value: m.id_monto || '' },
-                                        { id: 'id_vehiculo', value: m.id_vehiculo || '' },
-                                        { id: 'nombre_vehiculo_display', value: m.nombre_vehiculo || '' },
-                                        { id: 'monto_p', value: m.monto_p || '' },
-                                        { id: 'monto_f', value: m.monto_f || '' }
-                                    ];
+                                    // Actualizar CAMPOS OCULTOS
+                                    const idVehiculoField = document.getElementById('id_vehiculo');
+                                    if (idVehiculoField) {
+                                        idVehiculoField.value = v.id_vehiculo || '';
+                                    }
                                     
-                                    elementos.forEach(item => {
-                                        const elemento = document.getElementById(item.id);
-                                        if (elemento) {
-                                            elemento.value = item.value;
-            } else {
-                console.warn(`[WARNING] Elemento con ID "${item.id}" no encontrado`);
-            }
+                                    // Actualizar CAMPO VISIBLE DE NOMBRE VEHÍCULO
+                                    const nombreVehiculoField = document.querySelector('input[name="nombre_vehiculo"]');
+                                    if (nombreVehiculoField) {
+                                        nombreVehiculoField.value = v.nombre_vehiculo || '';
+                                        console.log('Nombre vehículo actualizado:', v.nombre_vehiculo); // Para debugging
+                                    }
+                                    
+                                    div.style.display = 'none';
+                                });
+                                div.appendChild(el);
+                            });
+                        }
+                        div.style.display = 'block';
+                    })
+                    .catch(err => {
+                        error('Error en búsqueda');
+                    });
+            }, 300);
         });
         
         // Actualizar selects
