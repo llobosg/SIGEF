@@ -112,7 +112,7 @@ if (isset($_GET['edit'])) {
                     
                     <!-- Fila 2: Campos -->
                     <div class="field-item">
-                        <input type="text" id="nombre_vehiculo_display" name="nombre_vehiculo" 
+                        <input type="text" id="nombre_vehiculo_display" name="nombre_vehiculo_display" 
                             value="<?= htmlspecialchars($monto['nombre_vehiculo'] ?? '') ?>" 
                             required>
                     </div>
@@ -267,28 +267,36 @@ if (isset($_GET['edit'])) {
                                 el.style.padding = '8px';
                                 el.style.cursor = 'pointer';
                                 el.style.borderBottom = '1px solid #eee';
-                                // Mostrar ambos montos en la búsqueda
                                 el.textContent = `${m.nombre_vehiculo} | ${m.tipo_monto} | ${m.tipo_personal} | P: $${parseFloat(m.monto_p).toLocaleString()} | F: $${parseFloat(m.monto_f).toLocaleString()}`;
                                 el.addEventListener('click', () => {
-                                    // Cargar todos los campos del monto seleccionado
-                                    document.getElementById('id_monto').value = m.id_monto;
-                                    document.getElementById('id_vehiculo').value = m.id_vehiculo || '';
-                                    document.getElementById('nombre_vehiculo_display').value = m.nombre_vehiculo || '';
+                                    const elementos = [
+                                        { id: 'id_monto', value: m.id_monto || '' },
+                                        { id: 'id_vehiculo', value: m.id_vehiculo || '' },
+                                        { id: 'nombre_vehiculo_display', value: m.nombre_vehiculo || '' },
+                                        { id: 'monto_p', value: m.monto_p || '' },
+                                        { id: 'monto_f', value: m.monto_f || '' }
+                                    ];
                                     
-                                    // Actualizar selects
-                                    document.querySelector('select[name="tipo_monto"]').value = m.tipo_monto || '';
-                                    document.querySelector('select[name="tipo_personal"]').value = m.tipo_personal || '';
-                                    
-                                    // Actualizar campos de monto (si existen en el formulario)
-                                    const montoPField = document.querySelector('input[name="monto_p"]');
-                                    const montoFField = document.querySelector('input[name="monto_f"]');
-                                    if (montoPField) montoPField.value = m.monto_p || '';
-                                    if (montoFField) montoFField.value = m.monto_f || '';
-                                    
-                                    div.style.display = 'none';
-                                });
-                                div.appendChild(el);
-                            });
+                                    elementos.forEach(item => {
+                                        const elemento = document.getElementById(item.id);
+                                        if (elemento) {
+                                            elemento.value = item.value;
+            } else {
+                console.warn(`[WARNING] Elemento con ID "${item.id}" no encontrado`);
+            }
+        });
+        
+        // Actualizar selects
+        const tipoMontoSelect = document.querySelector('select[name="tipo_monto"]');
+        const tipoPersonalSelect = document.querySelector('select[name="tipo_personal"]');
+        
+        if (tipoMontoSelect) tipoMontoSelect.value = m.tipo_monto || '';
+        if (tipoPersonalSelect) tipoPersonalSelect.value = m.tipo_personal || '';
+        
+        div.style.display = 'none';
+    });
+    div.appendChild(el);
+});
                         }
                         div.style.display = 'block';
                     })
