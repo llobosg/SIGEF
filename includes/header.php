@@ -15,6 +15,9 @@ $rol = $_SESSION['rol'] ?? 'basico';
             <a href="/pages/facturacion_view.php">
                 <i class="fas fa-file-invoice"></i> Facturación
             </a>
+            <a href="/pages/pagos_view.php">
+                <i class="fas fa-money-check-alt"></i> Pagos
+            </a>
             <a href="/pages/vehiculos_view.php">
                 <i class="fas fa-truck"></i> Vehículos
             </a>
