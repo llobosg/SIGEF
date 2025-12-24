@@ -1,22 +1,23 @@
 <?php
 // api/get_monto.php
 header('Content-Type: application/json');
+error_reporting(E_ALL);
 
 require '../config.php';
 
 try {
     $pdo = getDBConnection();
     
-    // Consulta actualizada con los nuevos campos
+    // Verificar la estructura actual de tu tabla MONTO
     $stmt = $pdo->prepare("
         SELECT 
             id_monto,
-            id_vehiculo, 
-            nombre_vehiculo, 
-            tipo_monto, 
-            tipo_personal, 
-            monto_p,  // ← Campo nuevo
-            monto_f   // ← Campo nuevo
+            id_vehiculo,
+            nombre_vehiculo,
+            tipo_monto,
+            tipo_personal,
+            monto_p,
+            monto_f
         FROM MONTO 
         ORDER BY nombre_vehiculo
     ");
@@ -28,7 +29,6 @@ try {
     
 } catch (Exception $e) {
     error_log("[GET_MONTO] Error: " . $e->getMessage());
-    // Devolver array vacío en caso de error (evita errores 500)
     echo json_encode([]);
 }
 ?>
