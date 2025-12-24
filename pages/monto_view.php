@@ -1,4 +1,5 @@
 <?php
+// pages/monto_logic.php
 require '../session_check.php';
 if ($_SESSION['rol'] !== 'admin') {
     die('Acceso denegado');
