@@ -68,19 +68,45 @@ if (isset($_GET['edit'])) {
             font-size: 0.95rem;
             box-sizing: border-box;
         }
-        .datos-personal-grid {
+        /* Layout tradicional para Ficha de Pagos */
+        .ficha-pagos-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 0.8rem;
             margin: 1rem 0;
         }
-        .dato-item {
+        .ficha-pagos-grid .label-item,
+        .ficha-pagos-grid .field-item {
+            text-align: center;
+            padding: 0.3rem;
+        }
+        .ficha-pagos-grid .label-item {
+            font-weight: 600;
+            color: #444;
+            border-bottom: 2px solid #0066cc;
+            font-size: 0.85rem;
+        }
+        .ficha-pagos-grid .field-item {
+            min-height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ficha-pagos-grid .field-item input {
+            width: 95%;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
             font-size: 0.9rem;
         }
-        .dato-item strong {
-            display: block;
-            color: var(--dark);
-            margin-bottom: 0.2rem;
+        .ficha-pagos-grid .field-item input[readonly] {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+        @media (max-width: 768px) {
+            .ficha-pagos-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -102,15 +128,6 @@ if (isset($_GET['edit'])) {
                  style="position: absolute; background: white; border: 1px solid #ccc; width: 100%; max-height: 200px; overflow-y: auto; display: none; z-index: 1000;"></div>
         </div>
 
-        <!-- Datos del Personal -->
-        <div class="card">
-            <h3><i class="fas fa-user"></i> Datos del Personal</h3>
-            <div id="datosPersonal" class="datos-personal-grid">
-                <div class="dato-item"><strong>Nombre</strong> <span id="nombre_personal">-</span></div>
-                <div class="dato-item"><strong>Tipo Personal</strong> <span id="tipo_personal">-</span></div>
-            </div>
-        </div>
-
         <!-- Ficha Pagos -->
         <div class="card">
             <h3><i class="fas fa-file-invoice-dollar"></i> Ficha de Pagos</h3>
@@ -119,35 +136,37 @@ if (isset($_GET['edit'])) {
                 <input type="hidden" id="id_personal" value="<?= $pago['id_personal'] ?? '' ?>">
                 <input type="hidden" id="id_vehiculo" value="<?= $pago['id_vehiculo'] ?? '' ?>">
 
-                <div class="form-group">
-                    <label>Nombre *</label>
-                    <input type="text" id="nombre_display" 
-                           value="<?= htmlspecialchars($pago['nombre'] ?? '') ?>" 
-                           readonly required>
+                <div class="ficha-pagos-grid">
+                    <!-- Fila 1: Labels -->
+                    <div class="label-item">Nombre</div>
+                    <div class="label-item">Tipo Personal</div>
+                    <div class="label-item">Fecha</div>
+                    <div class="label-item">Total Monto</div>
+                    
+                    <!-- Fila 2: Campos -->
+                    <div class="field-item">
+                        <input type="text" id="nombre_display" 
+                               value="<?= htmlspecialchars($pago['nombre'] ?? '') ?>" 
+                               readonly required>
+                    </div>
+                    <div class="field-item">
+                        <input type="text" id="tipo_personal_display" 
+                               value="<?= htmlspecialchars($pago['tipo_personal'] ?? '') ?>" 
+                               readonly required>
+                    </div>
+                    <div class="field-item">
+                        <input type="date" id="fecha" 
+                               value="<?= $pago['fecha'] ?? date('Y-m-d') ?>" 
+                               required>
+                    </div>
+                    <div class="field-item">
+                        <input type="number" id="total_monto" 
+                               value="<?= $pago['total_monto'] ?? '0' ?>" 
+                               readonly step="0.01">
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Tipo Personal *</label>
-                    <input type="text" id="tipo_personal_display" 
-                           value="<?= htmlspecialchars($pago['tipo_personal'] ?? '') ?>" 
-                           readonly required>
-                </div>
-
-                <div class="form-group">
-                    <label>Fecha *</label>
-                    <input type="date" id="fecha" 
-                           value="<?= $pago['fecha'] ?? date('Y-m-d') ?>" 
-                           required>
-                </div>
-
-                <div class="form-group">
-                    <label>Total Monto</label>
-                    <input type="number" id="total_monto" 
-                           value="<?= $pago['total_monto'] ?? '0' ?>" 
-                           readonly step="0.01">
-                </div>
-
-                <button type="button" id="btnAgregarPago" class="btn-primary" style="margin-top: 1rem;">
+                <button type="button" id="btnAgregarPago" class="btn-primary" style="margin-top: 1.5rem;">
                     <i class="fas fa-plus"></i> Agregar Pago
                 </button>
             </form>
@@ -307,8 +326,6 @@ if (isset($_GET['edit'])) {
                             document.getElementById('id_personal').value = p.id_personal;
                             document.getElementById('nombre_display').value = p.nombre;
                             document.getElementById('tipo_personal_display').value = p.tipo_personal;
-                            document.getElementById('nombre_personal').textContent = p.nombre;
-                            document.getElementById('tipo_personal').textContent = p.tipo_personal;
                             div.style.display = 'none';
                         });
                         div.appendChild(el);
